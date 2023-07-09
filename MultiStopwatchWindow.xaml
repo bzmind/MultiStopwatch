@@ -1,0 +1,220 @@
+﻿<Window x:Class="MultiStopwatch.MultiStopwatchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:utility="clr-namespace:MultiStopwatch.Utility"
+        mc:Ignorable="d"
+        Title="MultiStopwatchWindow"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        ShowInTaskbar="False" Topmost="True" Height="28" Width="112"
+        utility:EnableDragHelper.EnableDrag="True">
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="assets/Icons.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+  <Grid>
+    <Border Background="Black" CornerRadius="4">
+      <Grid>
+        <Button x:Name="StartButton" Margin="0,0,83,0" Width="21" Height="21" Cursor="Hand"
+                Click="StartButton_OnClick">
+          <Button.Template>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="ButtonBorder" Background="#333333" CornerRadius="3" Padding="3.5">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#454545" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#333333" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Button.Template>
+          <Grid>
+            <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
+          </Grid>
+        </Button>
+        <Button x:Name="ResetButton" Margin="0,0,37,0" Width="21" Height="21" Cursor="Hand"
+                Click="ResetButton_OnClick">
+          <Button.Template>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="ButtonBorder" Background="#333333" CornerRadius="3" Padding="3">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#454545" Duration="0:0:0.15" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#333333" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Button.Template>
+          <Grid>
+            <Image Source="{StaticResource ResetDrawingImage}" />
+          </Grid>
+        </Button>
+        <TextBox x:Name="FirstStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
+                 FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+                 FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#24D167"
+                 Background="Transparent" Height="15" Margin="48,-1,0,11" Text="00:00:00" />
+
+        <TextBox x:Name="SecondStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
+                 FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+                 FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#FF5050"
+                 Background="Transparent" Height="15" Margin="48,11,0,0" Text="00:00:00" />
+      </Grid>
+    </Border>
+    <tb:TaskbarIcon x:Name="NotifyIcon" IconSource="/assets/Stopwatch.ico" ToolTipText="MultiStopwatch"
+                    PopupActivation="RightClick">
+      <tb:TaskbarIcon.ContextMenu>
+        <ContextMenu x:Name="NotifyIconCtxMenu" Background="Transparent">
+          <ContextMenu.Template>
+            <ControlTemplate>
+              <Border x:Name="ContextMenuBorder" Background="Black" BorderBrush="#2F2F2F"
+                      BorderThickness="1" CornerRadius="5" Width="140">
+                <StackPanel>
+                  <MenuItem x:Name="CtxToggleStopwatchBtn" Height="30" Cursor="Hand"
+                            Click="CtxToggleStopwatchBtn_OnClick">
+                    <MenuItem.Template>
+                      <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="ToggleStopwatchBtnBorder" Background="Black" CornerRadius="5,5,0,0">
+                          <Grid>
+                            <Label x:Name="ToggleStopwatchBtnLabel" Content="{Binding ToggleStopwatchBtnLabel}"
+                                   Foreground="#D5D5D5" Margin="33,1,0,0" FontSize="12" FontFamily="Vazir"
+                                   FontWeight="Regular" />
+                            <Image x:Name="ToggleStopwatchBtnIcon" Margin="10,0,0,0"
+                                   HorizontalAlignment="Left" Source="{Binding ToggleStopwatchBtnIcon}"
+                                   Height="16" Width="16"/>
+                          </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToggleStopwatchBtnBorder" Property="Background" Value="#252525" />
+                          </Trigger>
+                          <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ToggleStopwatchBtnBorder" Property="Background" Value="Black" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </MenuItem.Template>
+                  </MenuItem>
+                  <MenuItem x:Name="CtxToggleMultiStopwatchBtn" Height="30" Cursor="Hand"
+                            Click="CtxToggleMultiStopwatchBtn_OnClick">
+                    <MenuItem.Template>
+                      <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="ToggleMultiStopwatchBtnBorder" Background="Black">
+                          <Grid>
+                            <Label x:Name="ToggleMultiStopwatchBtnLabel" Foreground="#D5D5D5" Margin="33,1,0,0" 
+                                   Content="{Binding ToggleMultiStopwatchBtnLabel}" FontSize="12" FontFamily="Vazir"
+                                   FontWeight="Regular" />
+                            <Image x:Name="ToggleStopwatchBtnIcon" Source="{Binding ToggleMultiStopwatchBtnIcon}"
+                                   Margin="10,0,0,0" HorizontalAlignment="Left" Height="16" Width="16"/>
+                          </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToggleMultiStopwatchBtnBorder" Property="Background" Value="#252525" />
+                          </Trigger>
+                          <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ToggleMultiStopwatchBtnBorder" Property="Background" Value="Black" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </MenuItem.Template>
+                  </MenuItem>
+                  <MenuItem x:Name="CtxToggleBothBtn" Height="30" Cursor="Hand" Click="CtxToggleBothBtn_OnClick"
+                            IsEnabled="{Binding ToggleBothBtnEnabled}">
+                    <MenuItem.Template>
+                      <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="ToggleBothBtnBorder" Background="Black">
+                          <Grid>
+                            <Label x:Name="ToggleBothBtnLabel" Content="{Binding ToggleBothBtnLabel}"
+                                   Foreground="#D5D5D5" Margin="33,1,0,0" FontSize="12" FontFamily="Vazir"
+                                   FontWeight="Regular" />
+                            <Image x:Name="ToggleBothBtnIcon" Source="{Binding ToggleBothBtnIcon}"
+                                   Margin="10,0,0,0" HorizontalAlignment="Left" Height="16" Width="16"/>
+                          </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToggleBothBtnBorder" Property="Background" Value="#252525" />
+                          </Trigger>
+                          <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ToggleBothBtnBorder" Property="Background" Value="Black" />
+                          </Trigger>
+                          <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#A0A0A0" />
+                            <Setter Property="Opacity" Value="0.5" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </MenuItem.Template>
+                  </MenuItem>
+                  <MenuItem x:Name="CtxExitButton" Height="30" Cursor="Hand" Click="CtxExitButton_OnClick">
+                    <MenuItem.Template>
+                      <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="ExitBtnBorder" Background="Black" CornerRadius="0,0,5,5">
+                          <Grid>
+                            <Label x:Name="ExitBtnLabel" Content="Exit" Foreground="#EC4444" Margin="33,1,0,0"
+                                   FontSize="12" FontFamily="Vazir" FontWeight="Regular"/>
+                            <Image x:Name="ExitBtnIcon" Source="{StaticResource ExitDrawingImage}" Margin="11,0,0,0"
+                                   HorizontalAlignment="Left" Height="16" Width="16"/>
+                          </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ExitBtnBorder" Property="Background" Value="#252525" />
+                          </Trigger>
+                          <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ExitBtnBorder" Property="Background" Value="Black" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </MenuItem.Template>
+                  </MenuItem>
+                </StackPanel>
+              </Border>
+            </ControlTemplate>
+          </ContextMenu.Template>
+        </ContextMenu>
+      </tb:TaskbarIcon.ContextMenu>
+    </tb:TaskbarIcon>
+  </Grid>
+</Window>

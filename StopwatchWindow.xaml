@@ -1,0 +1,102 @@
+﻿<Window x:Class="MultiStopwatch.StopwatchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:utility="clr-namespace:MultiStopwatch.Utility"
+        mc:Ignorable="d"
+        Title="MultiStopwatchWindow"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        ShowInTaskbar="False" Topmost="True" Height="28" Width="112"
+        utility:EnableDragHelper.EnableDrag="True">
+  <Window.Clip>
+    <RectangleGeometry Rect="0,0,112,28" RadiusX="5.5" RadiusY="5.5" />
+  </Window.Clip>
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="assets/Icons.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+  <Grid>
+    <Border Background="Black" CornerRadius="4">
+      <Grid>
+        <Button x:Name="StartBtn" Margin="0,0,83,0" Width="21" Height="21" Cursor="Hand"
+                Click="StartBtn_OnClick">
+          <Button.Template>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="StartBtnBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#454545" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="StartBtnBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#333333" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Button.Template>
+          <Grid>
+            <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
+          </Grid>
+        </Button>
+        <Button x:Name="ResetButton" Margin="0,0,37,0" Width="21" Height="21" Cursor="Hand"
+                Click="ResetButton_OnClick">
+          <Button.Template>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="ButtonBorder" Background="#333333" CornerRadius="3" Padding="3">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#454545" Duration="0:0:0.15" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        To="#333333" Duration="0:0:0.13" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Button.Template>
+          <Grid>
+            <Image Source="{StaticResource ResetDrawingImage}" />
+          </Grid>
+        </Button>
+        <TextBox x:Name="FirstStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
+                 FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+                 FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#DCDCDC"
+                 Background="Transparent" Height="15" Margin="48,6,0,6" Text="00:00:00" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>  
