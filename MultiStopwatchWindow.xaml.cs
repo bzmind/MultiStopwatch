@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
+using Application = System.Windows.Application;
 
 namespace MultiStopwatch;
 
@@ -20,9 +22,13 @@ public partial class MultiStopwatchWindow : Window
     {
         InitializeComponent();
         Closed += OnClosing;
+        NotifyIcon.TrayLeftMouseDown += CtxToggleBothBtn_OnClick;
+
         FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
         SecondStopwatch = new Stopwatch(SecondStopwatchTextBox);
+
         RestoreWindowPosition();
+
         ViewModel = new MultiStopwatchViewModel();
         DataContext = ViewModel;
     }

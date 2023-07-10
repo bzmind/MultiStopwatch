@@ -138,8 +138,7 @@
                  Background="Transparent" Height="15" Margin="48,11,0,0" Text="00:00:00" />
       </Grid>
     </Border>
-    <tb:TaskbarIcon x:Name="NotifyIcon" IconSource="/assets/Stopwatch.ico" ToolTipText="MultiStopwatch"
-                    PopupActivation="RightClick">
+    <tb:TaskbarIcon x:Name="NotifyIcon" IconSource="/assets/Stopwatch.ico" ToolTipText="MultiStopwatch">
       <tb:TaskbarIcon.ContextMenu>
         <ContextMenu x:Name="NotifyIconCtxMenu" Background="Transparent">
           <ContextMenu.Template>
