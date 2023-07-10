@@ -65,6 +65,22 @@
     </GeometryDrawing>
   </DrawingGroup>
   <DrawingImage x:Key="SwitchDrawingImage" Drawing="{StaticResource SwitchDrawingGroup}" />
+  <DrawingImage x:Key="FlippedSwitchDrawingImage">
+    <DrawingImage.Drawing>
+      <DrawingGroup ClipGeometry="M0,0 V18 H22 V0 H0 Z">
+        <GeometryDrawing Geometry="F1 M22,18z M0,0z M1,6L6,1 M6,1L6,17 M6,1L11,6">
+          <GeometryDrawing.Pen>
+            <Pen Brush="#BBBBBB" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+          </GeometryDrawing.Pen>
+        </GeometryDrawing>
+        <GeometryDrawing Geometry="F1 M22,18z M0,0z M11,12L16,17 M16,17L16,1 M16,17L21,12">
+          <GeometryDrawing.Pen>
+            <Pen Brush="#BBBBBB" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+          </GeometryDrawing.Pen>
+        </GeometryDrawing>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
   <Geometry x:Key="ExitGeometry1">F1 M23,24z M0,0z M1,12C1,14.34 1.06106,16.0017 1.25668,17.2352 1.4501,18.4548 1.76102,19.1562 2.18952,19.6492 2.62684,20.1523 3.28127,20.5491 4.39218,20.9735 5.21877,21.2892 6.21147,21.5906 7.45436,21.9679 7.90366,22.1042 8.38566,22.2506 8.90432,22.4111 10.7506,22.9824 12.0615,23.1022 12.9939,22.9235 13.8671,22.7562 14.4688,22.3176 14.928,21.562 15.4168,20.7577 15.753,19.5733 15.956,17.9349 16.1573,16.3094 16.2174,14.3317 16.2174,12 16.2174,9.66824 16.1573,7.69057 15.956,6.06507 15.753,4.42669 15.4168,3.24233 14.928,2.43805 14.4688,1.68242 13.8671,1.24377 12.9939,1.07648 12.0614,0.897844 10.7506,1.01757 8.90431,1.58891 8.38572,1.74939 7.90378,1.89568 7.45453,2.03205 6.21156,2.40934 5.21881,2.71068 4.39218,3.02646 3.28127,3.45084 2.62684,3.8476 2.18952,4.35072 1.76102,4.8437 1.4501,5.54512 1.25668,6.76477 1.06106,7.99824 1,9.65992 1,12z</Geometry>
   <Geometry x:Key="ExitGeometry2">F1 M23,24z M0,0z M16.261,20.64C21.0436,20.64 21.0436,19.4727 21.0436,12.1554 21.0436,4.83798 21.0436,3.35999 16.261,3.35999</Geometry>
   <DrawingGroup x:Key="ExitDrawingGroup" ClipGeometry="M0,0 V24 H23 V0 H0 Z">

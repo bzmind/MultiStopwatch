@@ -124,11 +124,13 @@ public partial class MultiStopwatchWindow : Window
         {
             FirstStopwatch.Pause();
             SecondStopwatch.Resume();
+            StartBtnIcon.Source = (ImageSource)FindResource("FlippedSwitchDrawingImage");
         }
         else if (SecondStopwatch.IsRunning)
         {
             SecondStopwatch.Pause();
             FirstStopwatch.Resume();
+            StartBtnIcon.Source = (ImageSource)FindResource("SwitchDrawingImage");
         }
     }
 
