@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 
@@ -110,7 +111,7 @@ public static class RegHelper
     {
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
 
-        var appPath = Assembly.GetExecutingAssembly().Location;
+        var appPath = Environment.ProcessPath;
         var registryValue = registryKey?.GetValue(AppName);
 
         return registryValue != null && registryValue.ToString() == appPath;
@@ -118,12 +119,12 @@ public static class RegHelper
 
     public static void EnableRunAtStartup()
     {
-        var appPath = Assembly.GetExecutingAssembly().Location;
+        var appPath = Environment.ProcessPath;
 
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         if (registryKey?.GetValue(AppName) == null)
         {
-            registryKey?.SetValue(AppName, appPath);
+            if (appPath != null) registryKey?.SetValue(AppName, appPath);
         }
     }
 
