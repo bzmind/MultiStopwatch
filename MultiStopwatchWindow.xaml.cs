@@ -29,27 +29,24 @@ public partial class MultiStopwatchWindow : Window
 
     public void RefreshContextMenuItems()
     {
+        ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
+        ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
+        ViewModel.ToggleStartupBtnLabel = "Run at Startup";
+
         if (RegHelper.IsWindowActive(AppWindow.Stopwatch))
-        {
-            ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
             ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        }
         else
-        {
-            ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("CloseDrawingImage");
-        }
+            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
 
         if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
-        {
-            ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
             ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        }
         else
-        {
-            ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("CloseDrawingImage");
-        }
+            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
+
+        if (RegHelper.IsStartupEnabled())
+            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
+        else
+            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
 
         if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && IsVisible ||
             RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.IsVisible)
@@ -143,7 +140,7 @@ public partial class MultiStopwatchWindow : Window
             StopwatchWindow.Hide();
             RegHelper.SaveWindowOnOrOffInReg(AppWindow.Stopwatch, "OFF");
             ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("CloseDrawingImage");
+            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
         }
         else
         {
@@ -169,7 +166,7 @@ public partial class MultiStopwatchWindow : Window
             Hide();
             RegHelper.SaveWindowOnOrOffInReg(AppWindow.MultiStopwatch, "OFF");
             ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("CloseDrawingImage");
+            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
         }
         else
         {
@@ -240,5 +237,19 @@ public partial class MultiStopwatchWindow : Window
     private void CtxExitButton_OnClick(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
+    }
+
+    private void CtxToggleStartupBtn_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (RegHelper.IsStartupEnabled())
+        {
+            RegHelper.DisableRunAtStartup();
+            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
+        }
+        else
+        {
+            RegHelper.EnableRunAtStartup();
+            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
+        }
     }
 }

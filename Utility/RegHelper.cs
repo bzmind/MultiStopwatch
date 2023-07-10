@@ -1,12 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Reflection;
 using System.Windows;
 
 namespace MultiStopwatch.Utility;
 
 public static class RegHelper
 {
-    private static string AppName => "MultiStopwatch";
+    public static string AppName => "MultiStopwatch";
     private static string ActiveWindowsRegPath => MultiStopwatchWindow.ActiveWindowsRegPath;
     private static string StopwatchWinPosRegPath => @$"SOFTWARE\{AppName}\Stopwatch\AppPosition";
     private static string MultiStopwatchWinPosRegPath => @$"SOFTWARE\{AppName}\AppPosition";
@@ -103,6 +104,33 @@ public static class RegHelper
         key?.Close();
 
         return winPos;
+    }
+
+    public static bool IsStartupEnabled()
+    {
+        var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+
+        var appPath = Assembly.GetExecutingAssembly().Location;
+        var registryValue = registryKey?.GetValue(AppName);
+
+        return registryValue != null && registryValue.ToString() == appPath;
+    }
+
+    public static void EnableRunAtStartup()
+    {
+        var appPath = Assembly.GetExecutingAssembly().Location;
+
+        var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        if (registryKey?.GetValue(AppName) == null)
+        {
+            registryKey?.SetValue(AppName, appPath);
+        }
+    }
+
+    public static void DisableRunAtStartup()
+    {
+        var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+        registryKey?.DeleteValue(AppName, false);
     }
 }
 

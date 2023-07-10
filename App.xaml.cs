@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Win32;
 using MultiStopwatch.Utility;
 
 namespace MultiStopwatch;

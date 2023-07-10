@@ -51,6 +51,28 @@ public class MultiStopwatchViewModel : INotifyPropertyChanged
         }
     }
 
+    private string _toggleStartupBtnLabel;
+    public string ToggleStartupBtnLabel
+    {
+        get => _toggleStartupBtnLabel;
+        set
+        {
+            _toggleStartupBtnLabel = value;
+            OnPropertyChanged(nameof(ToggleStartupBtnLabel));
+        }
+    }
+
+    public ImageSource _toggleStartupBtnIcon { get; set; }
+    public ImageSource ToggleStartupBtnIcon
+    {
+        get => _toggleStartupBtnIcon;
+        set
+        {
+            _toggleStartupBtnIcon = value;
+            OnPropertyChanged(nameof(ToggleStartupBtnIcon));
+        }
+    }
+
     private string _toggleBothBtnLabel;
     public string ToggleBothBtnLabel
     {
