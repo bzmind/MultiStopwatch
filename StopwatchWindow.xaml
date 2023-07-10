@@ -26,7 +26,11 @@
                 Click="StartBtn_OnClick">
           <Button.Template>
             <ControlTemplate TargetType="Button">
-              <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5">
+              <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5"
+                      RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                  <ScaleTransform />
+                </Border.RenderTransform>
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
               <ControlTemplate.Triggers>
@@ -50,6 +54,22 @@
                     </BeginStoryboard>
                   </Trigger.ExitActions>
                 </Trigger>
+                <EventTrigger RoutedEvent="Button.Click">
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StartBtnBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StartBtnBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
           </Button.Template>
@@ -61,7 +81,11 @@
                 Click="ResetButton_OnClick">
           <Button.Template>
             <ControlTemplate TargetType="Button">
-              <Border x:Name="ButtonBorder" Background="#333333" CornerRadius="3" Padding="3">
+              <Border x:Name="ResetBtnBorder" Background="#333333" CornerRadius="3" Padding="3"
+                      RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                  <ScaleTransform />
+                </Border.RenderTransform>
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
               <ControlTemplate.Triggers>
@@ -69,7 +93,7 @@
                   <Trigger.EnterActions>
                     <BeginStoryboard>
                       <Storyboard>
-                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                        <ColorAnimation Storyboard.TargetName="ResetBtnBorder"
                                         Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                         To="#454545" Duration="0:0:0.15" />
                       </Storyboard>
@@ -78,13 +102,29 @@
                   <Trigger.ExitActions>
                     <BeginStoryboard>
                       <Storyboard>
-                        <ColorAnimation Storyboard.TargetName="ButtonBorder"
+                        <ColorAnimation Storyboard.TargetName="ResetBtnBorder"
                                         Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                         To="#333333" Duration="0:0:0.13" />
                       </Storyboard>
                     </BeginStoryboard>
                   </Trigger.ExitActions>
                 </Trigger>
+                <EventTrigger RoutedEvent="Button.Click">
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ResetBtnBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ResetBtnBorder"
+                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
           </Button.Template>

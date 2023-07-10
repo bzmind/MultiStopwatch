@@ -14,7 +14,7 @@
       <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
         <GeometryDrawing Geometry="F1 M24,24z M0,0z M10,9L10,15 M14,9L14,15">
           <GeometryDrawing.Pen>
-            <Pen Brush="#BBBBBB" Thickness="0.9" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+            <Pen Brush="#BBBBBB" Thickness="0.8" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
           </GeometryDrawing.Pen>
         </GeometryDrawing>
       </DrawingGroup>
