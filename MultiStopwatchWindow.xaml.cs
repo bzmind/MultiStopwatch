@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Media;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
-using Application = System.Windows.Application;
 
 namespace MultiStopwatch;
 
@@ -54,22 +52,22 @@ public partial class MultiStopwatchWindow : Window
         else
             ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
 
-        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && IsVisible ||
-            RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.IsVisible)
+        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 1 ||
+            RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 1)
         {
             ViewModel.ToggleBothBtnEnabled = true;
             ViewModel.ToggleBothBtnLabel = "Hide All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("HideDrawingImage");
         }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && !IsVisible ||
-                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && !StopwatchWindow.IsVisible)
+        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 ||
+                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
             ViewModel.ToggleBothBtnEnabled = true;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && !IsVisible &&
-                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && !StopwatchWindow.IsVisible)
+        else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
+                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
             ViewModel.ToggleBothBtnEnabled = false;
             ViewModel.ToggleBothBtnLabel = "Show All";
@@ -194,47 +192,46 @@ public partial class MultiStopwatchWindow : Window
 
     private void ToggleBothBtn()
     {
-        if (IsVisible && StopwatchWindow.IsVisible)
+        if (Opacity == 1 && StopwatchWindow.Opacity == 1)
         {
-            StopwatchWindow.Hide();
-            Hide();
+            StopwatchWindow.Opacity = 0;
+            Opacity = 0;
+            ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
+        }
+        else if (Opacity == 1)
+        {
+            Opacity = 0;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (IsVisible)
+        else if (StopwatchWindow.Opacity == 1)
         {
-            Hide();
+            StopwatchWindow.Opacity = 0;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (StopwatchWindow.IsVisible)
+        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
+                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
-            StopwatchWindow.Hide();
+            Opacity = 1;
+            StopwatchWindow.Opacity = 1;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && !IsVisible &&
-                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && !StopwatchWindow.IsVisible)
+        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0)
         {
-            Show();
-            StopwatchWindow.Show();
+            Opacity = 1;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && !IsVisible)
+        else if (RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
-            Show();
+            StopwatchWindow.Opacity = 1;
             ViewModel.ToggleBothBtnLabel = "Show All";
             ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
-        else if (RegHelper.IsWindowActive(AppWindow.Stopwatch) && !StopwatchWindow.IsVisible)
-        {
-            StopwatchWindow.Show();
-            ViewModel.ToggleBothBtnLabel = "Show All";
-            ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
-        }
-        else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && !IsVisible &&
-                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && !StopwatchWindow.IsVisible)
+        else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
+                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
             ViewModel.ToggleBothBtnEnabled = false;
             ViewModel.ToggleBothBtnLabel = "Show All";
