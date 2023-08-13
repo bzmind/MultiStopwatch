@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,6 +10,17 @@ namespace MultiStopwatch;
 
 public partial class StopwatchWindow : Window
 {
+    #region DllImports
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+    static readonly IntPtr HWND_TOPMOST = new(-1);
+
+    const uint SWP_NOMOVE = 0x0002;
+    const uint SWP_NOSIZE = 0x0001;
+    #endregion
+
     public Stopwatch FirstStopwatch { get; set; }
 
     public StopwatchWindow()
@@ -17,6 +29,12 @@ public partial class StopwatchWindow : Window
         Closed += OnClosing;
         FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
         RestoreWindowPosition();
+    }
+
+    public void ResetTopMost()
+    {
+        Topmost = false;
+        Topmost = true;
     }
 
     private void OnClosing(object? o, EventArgs eventArgs)
