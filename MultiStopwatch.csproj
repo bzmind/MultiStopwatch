@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Stopwatch.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,14 +24,6 @@
 
   <ItemGroup>
     <Resource Include="assets\Stopwatch.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="E:\IDM\Compressed\globalhook2_src\GlobalHook\Gma.UserActivityMonitor\Gma.UserActivityMonitor.csproj" />
   </ItemGroup>
 
 </Project>

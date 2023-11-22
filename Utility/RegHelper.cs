@@ -8,8 +8,8 @@ public static class RegHelper
 {
     public static string AppName => "MultiStopwatch";
     private static string ActiveWindowsRegPath => MultiStopwatchWindow.ActiveWindowsRegPath;
-    private static string StopwatchWinPosRegPath => @$"SOFTWARE\{AppName}\Stopwatch\AppPosition";
-    private static string MultiStopwatchWinPosRegPath => @$"SOFTWARE\{AppName}\AppPosition";
+    private static string WindowPositionRegPath => @$"SOFTWARE\{AppName}\Position";
+    private static string WindowScaleRegPath => @$"SOFTWARE\{AppName}\Scale";
 
     public static void SaveWindowOnOrOffInReg(AppWindow window, string onOrOff)
     {
@@ -65,37 +65,60 @@ public static class RegHelper
 
     public static void SaveWindowPosition(AppWindow window, double left, double top)
     {
-        RegistryKey? key;
+        RegistryKey key = Registry.CurrentUser.CreateSubKey(WindowPositionRegPath);
 
         if (window == AppWindow.MultiStopwatch)
-            key = Registry.CurrentUser.CreateSubKey(MultiStopwatchWinPosRegPath);
+        {
+            key.SetValue("MultiStopwatch_Left", left);
+            key.SetValue("MultiStopwatch_Top", top);
+        }
         else
-            key = Registry.CurrentUser.CreateSubKey(StopwatchWinPosRegPath);
+        {
+            key.SetValue("Stopwatch_Left", left);
+            key.SetValue("Stopwatch_Top", top);
+        }
 
-        key.SetValue("WindowLeft", left);
-        key.SetValue("WindowTop", top);
         key.Close();
     }
 
     public static WinPos RestoreWindowPosition(AppWindow window, double width, double height)
     {
-        RegistryKey? key;
+        RegistryKey? key = Registry.CurrentUser.OpenSubKey(WindowPositionRegPath);
         var winPos = new WinPos();
 
-        if (window == AppWindow.MultiStopwatch)
-            key = Registry.CurrentUser.OpenSubKey(MultiStopwatchWinPosRegPath);
-        else
-            key = Registry.CurrentUser.OpenSubKey(StopwatchWinPosRegPath);
-
-        if (key == null || key.GetValue("WindowLeft") == null || key.GetValue("WindowTop") == null)
+        if (window == AppWindow.MultiStopwatch
+            && (key == null
+            || key.GetValue("MultiStopwatch_Left") == null
+            || key.GetValue("MultiStopwatch_Top") == null))
         {
+            winPos.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
+            winPos.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
+        }
+        else if (window == AppWindow.Stopwatch
+            && (key == null
+            || key.GetValue("Stopwatch_Left") == null
+            || key.GetValue("Stopwatch_Top") == null))
+        {
+
             winPos.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
             winPos.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
         }
         else
         {
-            var left = Convert.ToDouble(key.GetValue("WindowLeft"));
-            var top = Convert.ToDouble(key.GetValue("WindowTop"));
+            double left;
+            double top;
+
+            if (window == AppWindow.MultiStopwatch)
+            {
+                left = Convert.ToDouble(key.GetValue("MultiStopwatch_Left"));
+                top = Convert.ToDouble(key.GetValue("MultiStopwatch_Top"));
+            }
+            else
+            {
+                left = Convert.ToDouble(key.GetValue("Stopwatch_Left"));
+                top = Convert.ToDouble(key.GetValue("Stopwatch_Top"));
+            }
+
             winPos.Left = left;
             winPos.Top = top;
         }
@@ -120,9 +143,9 @@ public static class RegHelper
         var appPath = Environment.ProcessPath;
 
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-        if (registryKey?.GetValue(AppName) == null)
+        if (appPath != null && registryKey?.GetValue(AppName) != appPath)
         {
-            if (appPath != null) registryKey?.SetValue(AppName, appPath);
+            registryKey?.SetValue(AppName, appPath);
         }
     }
 
@@ -130,6 +153,27 @@ public static class RegHelper
     {
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
         registryKey?.DeleteValue(AppName, false);
+    }
+
+    public static void SaveWindowScale(int scale)
+    {
+        RegistryKey key = Registry.CurrentUser.CreateSubKey(WindowScaleRegPath);
+        key.SetValue("Scale", scale, RegistryValueKind.String);
+        key.Close();
+    }
+
+    public static int RestoreWindowScale()
+    {
+        RegistryKey? key = Registry.CurrentUser.OpenSubKey(WindowScaleRegPath);
+        int _scale;
+
+        if (key == null || key.GetValue("Scale") == null)
+            _scale = 100;
+        else
+            _scale = Convert.ToInt32(key.GetValue("Scale"));
+
+        key?.Close();
+        return _scale;
     }
 }
 

@@ -7,7 +7,6 @@ namespace MultiStopwatch.Models;
 public class Stopwatch
 {
     private DateTime StartTime { get; set; }
-    private DateTime PauseTime { get; set; }
     private TimeSpan ElapsedTime { get; set; }
     private TimeSpan ElapsedTimeTillPause { get; set; }
     private DispatcherTimer Timer { get; set; }

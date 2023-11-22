@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
+using Microsoft.Win32;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
 using Application = System.Windows.Application;
+using PowerLineStatus = System.Windows.Forms.PowerLineStatus;
 
 namespace MultiStopwatch;
 
@@ -14,23 +17,60 @@ public partial class MultiStopwatchWindow : Window
     public static string ActiveWindowsRegPath => @$"SOFTWARE\{AppName}\ActiveWindows";
     public Stopwatch FirstStopwatch { get; set; }
     public Stopwatch SecondStopwatch { get; set; }
-    public MultiStopwatchViewModel ViewModel { get; set; }
+    public MainViewModel ViewModel { get; set; }
     public StopwatchWindow StopwatchWindow { get; set; }
 
-    public MultiStopwatchWindow()
+    public MultiStopwatchWindow(StopwatchWindow stopwatchWindow)
     {
         InitializeComponent();
         Closed += OnClosing;
         NotifyIcon.TrayLeftMouseDown += CtxToggleBothBtn_OnClick;
         NotifyIcon.ContextMenu.Closed += NotifyIconOnContextMenuClosed;
+        SystemEvents.PowerModeChanged += PowerModeChanged;
 
+        StopwatchWindow = stopwatchWindow;
         FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
         SecondStopwatch = new Stopwatch(SecondStopwatchTextBox);
 
-        RestoreWindowPosition();
-
-        ViewModel = new MultiStopwatchViewModel();
+        ViewModel = new MainViewModel();
         DataContext = ViewModel;
+
+        RestoreWindowPosition();
+        RestoreWindowsScales();
+    }
+
+    private void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+        switch (e.Mode)
+        {
+            case PowerModes.StatusChange:
+                // The power status has changed (e.g., plugged in or unplugged)
+                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline)
+                {
+                    // Power outage detected
+                    // You can take appropriate actions here
+                    // For example, display a message or save application state
+                }
+                break;
+        }
+    }
+
+    private void CtxSettingsBtn_OnClick(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new SettingsWindow(this, StopwatchWindow);
+        settingsWindow.Show();
+    }
+
+    public void SetWindowsScales(double scale)
+    {
+        ViewModel.Scale = scale;
+        StopwatchWindow.ViewModel.Scale = scale;
+    }
+
+    public void RestoreWindowsScales()
+    {
+        var scale = RegHelper.RestoreWindowScale();
+        SetWindowsScales(scale * 0.01);
     }
 
     private void NotifyIconOnContextMenuClosed(object sender, RoutedEventArgs e)
@@ -41,24 +81,11 @@ public partial class MultiStopwatchWindow : Window
 
     public void RefreshContextMenuItems()
     {
-        ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
-        ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
-        ViewModel.ToggleStartupBtnLabel = "Run at Startup";
+        ViewModel.StopwatchCheckBox = RegHelper.IsWindowActive(AppWindow.Stopwatch);
 
-        if (RegHelper.IsWindowActive(AppWindow.Stopwatch))
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        else
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
+        ViewModel.MultiStopwatchCheckBox = RegHelper.IsWindowActive(AppWindow.MultiStopwatch);
 
-        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        else
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
-
-        if (RegHelper.IsStartupEnabled())
-            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        else
-            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
+        ViewModel.StartupCheckBox = RegHelper.IsStartupEnabled();
 
         if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 1 ||
             RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 1)
@@ -106,7 +133,7 @@ public partial class MultiStopwatchWindow : Window
         ResetStopwatches();
     }
 
-    private void ResetStopwatches()
+    public void ResetStopwatches()
     {
         FirstStopwatch.Reset();
         SecondStopwatch.Reset();
@@ -140,57 +167,6 @@ public partial class MultiStopwatchWindow : Window
         }
     }
 
-    private void CtxToggleStopwatchBtn_OnClick(object sender, RoutedEventArgs e)
-    {
-        ToggleStopwatchBtn();
-        RefreshContextMenuItems();
-    }
-
-    private void ToggleStopwatchBtn()
-    {
-        if (RegHelper.IsWindowActive(AppWindow.Stopwatch))
-        {
-            StopwatchWindow.ResetStopwatch();
-            StopwatchWindow.Hide();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.Stopwatch, "OFF");
-            ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
-        }
-        else
-        {
-            if (IsVisible)
-                StopwatchWindow.Show();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.Stopwatch, "ON");
-            ViewModel.ToggleStopwatchBtnLabel = "Stopwatch";
-            ViewModel.ToggleStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        }
-    }
-
-    private void CtxToggleMultiStopwatchBtn_OnClick(object sender, RoutedEventArgs e)
-    {
-        ToggleMultiStopwatchBtn();
-        RefreshContextMenuItems();
-    }
-
-    private void ToggleMultiStopwatchBtn()
-    {
-        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
-        {
-            ResetStopwatches();
-            Hide();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.MultiStopwatch, "OFF");
-            ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
-        }
-        else
-        {
-            if (StopwatchWindow.IsVisible)
-                Show();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.MultiStopwatch, "ON");
-            ViewModel.ToggleMultiStopwatchBtnLabel = "Multi-Stopwatch";
-            ViewModel.ToggleMultiStopwatchBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        }
-    }
 
     private void CtxToggleBothBtn_OnClick(object sender, RoutedEventArgs e)
     {
@@ -257,19 +233,5 @@ public partial class MultiStopwatchWindow : Window
     private void CtxExitButton_OnClick(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
-    }
-
-    private void CtxToggleStartupBtn_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (RegHelper.IsStartupEnabled())
-        {
-            RegHelper.DisableRunAtStartup();
-            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("UncheckedDrawingImage");
-        }
-        else
-        {
-            RegHelper.EnableRunAtStartup();
-            ViewModel.ToggleStartupBtnIcon = (ImageSource)FindResource("CheckedDrawingImage");
-        }
     }
 }

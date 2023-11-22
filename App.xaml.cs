@@ -7,15 +7,13 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
-        var multiStopwatchWindow = new MultiStopwatchWindow();
+        var stopwatchWindow = new StopwatchWindow();
+        var multiStopwatchWindow = new MultiStopwatchWindow(stopwatchWindow);
 
         if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
             multiStopwatchWindow.Hide();
         else
             multiStopwatchWindow.Show();
-
-        var stopwatchWindow = new StopwatchWindow();
-        multiStopwatchWindow.StopwatchWindow = stopwatchWindow;
 
         if (!RegHelper.IsWindowActive(AppWindow.Stopwatch))
             stopwatchWindow.Hide();

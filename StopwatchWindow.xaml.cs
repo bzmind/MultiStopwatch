@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
+using MultiStopwatch.ViewModels;
 
 namespace MultiStopwatch;
 
@@ -22,6 +23,7 @@ public partial class StopwatchWindow : Window
     #endregion
 
     public Stopwatch FirstStopwatch { get; set; }
+    public MainViewModel ViewModel { get; set; }
 
     public StopwatchWindow()
     {
@@ -29,6 +31,9 @@ public partial class StopwatchWindow : Window
         Closed += OnClosing;
         FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
         RestoreWindowPosition();
+
+        ViewModel = new MainViewModel();
+        DataContext = ViewModel;
     }
 
     public void ResetTopMost()
