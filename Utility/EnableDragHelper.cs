@@ -1,21 +1,19 @@
-﻿namespace MultiStopwatch.Utility;
-
+﻿using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
+namespace MultiStopwatch.Utility;
+
 public class EnableDragHelper
 {
     public static readonly DependencyProperty EnableDragProperty = DependencyProperty.RegisterAttached(
-        "EnableDrag",
-        typeof(bool),
-        typeof(EnableDragHelper),
-        new PropertyMetadata(default(bool), OnLoaded));
+        "EnableDrag", typeof(bool), typeof(EnableDragHelper), new PropertyMetadata(default(bool), OnLoaded));
 
     private static void OnLoaded(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
     {
-        var uiElement = dependencyObject as UIElement;
-        if (uiElement == null || dependencyPropertyChangedEventArgs.NewValue is bool == false)
+        if (dependencyObject is not UIElement uiElement
+            || dependencyPropertyChangedEventArgs.NewValue is bool == false)
         {
             return;
         }
@@ -27,32 +25,36 @@ public class EnableDragHelper
         {
             uiElement.MouseMove -= UIElementOnMouseMove;
         }
-
     }
 
     private static void UIElementOnMouseMove(object sender, MouseEventArgs mouseEventArgs)
     {
-        var uiElement = sender as UIElement;
-        if (uiElement != null)
+        if (sender is not UIElement uiElement || mouseEventArgs.LeftButton != MouseButtonState.Pressed)
+            return;
+
+        DependencyObject parent = uiElement;
+        var avoidInfiniteLoop = 0;
+
+        // Search up the visual tree to find the first parent window.
+        while (parent is Window == false)
         {
-            if (mouseEventArgs.LeftButton == MouseButtonState.Pressed)
+            parent = VisualTreeHelper.GetParent(parent);
+            avoidInfiniteLoop++;
+            if (avoidInfiniteLoop == 1000)
             {
-                DependencyObject parent = uiElement;
-                int avoidInfiniteLoop = 0;
-                // Search up the visual tree to find the first parent window.
-                while (parent is Window == false)
-                {
-                    parent = VisualTreeHelper.GetParent(parent);
-                    avoidInfiniteLoop++;
-                    if (avoidInfiniteLoop == 1000)
-                    {
-                        // Something is wrong - we could not find the parent window.
-                        return;
-                    }
-                }
-                var window = parent as Window;
-                window.DragMove();
+                // Something is wrong - we could not find the parent window.
+                return;
             }
+        }
+
+        var window = parent as Window;
+        try
+        {
+            window.DragMove();
+        }
+        catch (Exception)
+        {
+            // ignored
         }
     }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,76 +8,50 @@ using MultiStopwatch.ViewModels;
 
 namespace MultiStopwatch;
 
-public partial class StopwatchWindow : Window
+public partial class StopwatchWindow : AbstractWindow
 {
-    #region DllImports
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
-
-    static readonly IntPtr HWND_TOPMOST = new(-1);
-
-    const uint SWP_NOMOVE = 0x0002;
-    const uint SWP_NOSIZE = 0x0001;
-    #endregion
-
-    public Stopwatch FirstStopwatch { get; set; }
+    public MainStopwatch FirstMainStopwatch { get; set; }
     public MainViewModel ViewModel { get; set; }
 
     public StopwatchWindow()
     {
         InitializeComponent();
+        Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
-        FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
-        RestoreWindowPosition();
+
+        FirstMainStopwatch = new MainStopwatch(FirstStopwatchTextBox);
+
+        RestoreWindowPosition(AppWindow.Stopwatch);
 
         ViewModel = new MainViewModel();
         DataContext = ViewModel;
     }
 
-    public void ResetTopMost()
+    protected override void OnClosing(object? o, EventArgs eventArgs)
     {
-        Topmost = false;
-        Topmost = true;
-    }
-
-    private void OnClosing(object? o, EventArgs eventArgs)
-    {
-        SaveWindowPosition();
-    }
-
-    private void SaveWindowPosition()
-    {
-        RegHelper.SaveWindowPosition(AppWindow.Stopwatch, Left, Top);
-    }
-
-    private void RestoreWindowPosition()
-    {
-        var winPos = RegHelper.RestoreWindowPosition(AppWindow.Stopwatch, Width, Height);
-        Left = winPos.Left;
-        Top = winPos.Top;
+        SaveWindowPosition(AppWindow.Stopwatch);
     }
 
     private void StartBtn_OnClick(object sender, RoutedEventArgs e)
     {
-        FirstStopwatch.Start();
+        FirstMainStopwatch.Start();
         StartBtn.Click -= StartBtn_OnClick;
         StartBtn.Click += PauseButton_OnClick;
         StartBtnIcon.Source = (ImageSource)FindResource("PauseDrawingImage");
-        SetBorderPadding(4);
+        SetBorderPadding(4); // The icon was a bit large, I added padding to make it smaller
     }
 
     private void PauseButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (FirstStopwatch.IsRunning)
+        if (FirstMainStopwatch.IsRunning)
         {
-            FirstStopwatch.Pause();
+            FirstMainStopwatch.Pause();
             StartBtnIcon.Source = (ImageSource)FindResource("StartDrawingImage");
             SetBorderPadding(3.5);
         }
         else
         {
-            FirstStopwatch.Resume();
+            FirstMainStopwatch.Start();
             StartBtnIcon.Source = (ImageSource)FindResource("PauseDrawingImage");
             SetBorderPadding(4);
         }
@@ -91,7 +64,7 @@ public partial class StopwatchWindow : Window
 
     public void ResetStopwatch()
     {
-        FirstStopwatch.Reset();
+        FirstMainStopwatch.Reset();
         StartBtn.Click -= StartBtn_OnClick;
         StartBtn.Click -= PauseButton_OnClick;
         StartBtn.Click += StartBtn_OnClick;

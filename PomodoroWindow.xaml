@@ -1,0 +1,99 @@
+﻿<models:AbstractWindow x:Class="MultiStopwatch.PomodoroWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:utility="clr-namespace:MultiStopwatch.Utility"
+        xmlns:models="clr-namespace:MultiStopwatch.Models"
+        mc:Ignorable="d"
+        Title="PomodoroWindow"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        ShowInTaskbar="False" Topmost="True" Height="25" Width="83"
+        utility:EnableDragHelper.EnableDrag="True">
+  <models:AbstractWindow.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="assets/Icons.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </models:AbstractWindow.Resources>
+  <Viewbox Stretch="Uniform">
+    <Viewbox.RenderTransform>
+      <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" />
+    </Viewbox.RenderTransform>
+    <Grid>
+      <Border Background="Black" CornerRadius="4"
+              HorizontalAlignment="Center" Width="83" Height="25" VerticalAlignment="Center">
+        <Grid>
+          <Button x:Name="StartBtn" Margin="0,2,58,2" Width="21" Height="21" Cursor="Hand"
+                  Click="StartBtn_OnClick">
+            <Button.Template>
+              <ControlTemplate TargetType="Button">
+                <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5"
+                    RenderTransformOrigin="0.5,0.5">
+                  <Border.RenderTransform>
+                    <ScaleTransform />
+                  </Border.RenderTransform>
+                  <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                      <BeginStoryboard>
+                        <Storyboard>
+                          <ColorAnimation Storyboard.TargetName="StartBtnBorder"
+                                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                      To="#454545" Duration="0:0:0.13" />
+                        </Storyboard>
+                      </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                      <BeginStoryboard>
+                        <Storyboard>
+                          <ColorAnimation Storyboard.TargetName="StartBtnBorder"
+                                      Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                      To="#333333" Duration="0:0:0.13" />
+                        </Storyboard>
+                      </BeginStoryboard>
+                    </Trigger.ExitActions>
+                  </Trigger>
+                  <EventTrigger RoutedEvent="Button.Click">
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StartBtnBorder"
+                                                   Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)">
+                          <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                          <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StartBtnBorder"
+                                                   Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)">
+                          <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.9" />
+                          <EasingDoubleKeyFrame KeyTime="0:0:0.09" Value="1" />
+                        </DoubleAnimationUsingKeyFrames>
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </EventTrigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Button.Template>
+            <Grid>
+              <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
+            </Grid>
+          </Button>
+
+          <TextBox x:Name="GreenStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
+               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+               FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#24D167"
+               Background="Transparent" Height="9" Margin="23,2,0,12" Text="00:00:00" 
+               Padding="-3.35"/>
+
+          <TextBox x:Name="RedStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
+               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+               FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#FF5050"
+               Background="Transparent" Height="9" Margin="23,12,0,2" Text="00:00:00" 
+               Padding="-3.35"/>
+        </Grid>
+      </Border>
+    </Grid>
+  </Viewbox>
+</models:AbstractWindow>

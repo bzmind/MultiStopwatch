@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\Stopwatch.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Stopwatch.ico" />
   </ItemGroup>
 
@@ -23,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="assets\fonts\JetBrainsMono-SemiBold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="assets\Stopwatch.ico" />
   </ItemGroup>
 

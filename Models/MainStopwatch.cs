@@ -4,19 +4,19 @@ using System.Windows.Threading;
 
 namespace MultiStopwatch.Models;
 
-public class Stopwatch
+public class MainStopwatch
 {
     private DateTime StartTime { get; set; }
-    private TimeSpan ElapsedTime { get; set; }
+    public TimeSpan ElapsedTime { get; set; }
     private TimeSpan ElapsedTimeTillPause { get; set; }
-    private DispatcherTimer Timer { get; set; }
+    public DispatcherTimer Timer { get; set; }
     private TextBox TextBox { get; set; }
     private bool IsFirstStart { get; set; } = true;
     public bool IsRunning { get; set; }
 
-    public Stopwatch(TextBox textBox)
+    public MainStopwatch(TextBox textBox)
     {
-        Timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
+        Timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         Timer.Tick += OnTick;
         TextBox = textBox;
     }
@@ -25,7 +25,7 @@ public class Stopwatch
     {
         if (IsRunning)
         {
-            ElapsedTime = DateTime.Now - StartTime;
+            ElapsedTime = ElapsedTime.Add(TimeSpan.FromSeconds(1));
             UpdateStopwatch();
         }
     }
@@ -42,9 +42,26 @@ public class Stopwatch
 
     public void Start()
     {
-        Timer.Start();
-        StartTime = DateTime.Now;
-        IsRunning = true;
+        if (IsFirstStart)
+        {
+            Timer.Start();
+            StartTime = DateTime.Now;
+            IsRunning = true;
+        }
+        else
+        {
+            if (IsRunning)
+                return;
+
+            IsRunning = true;
+            StartTime = DateTime.Now - ElapsedTimeTillPause;
+
+            if (IsFirstStart)
+                Start();
+            else
+                Timer.Start();
+        }
+        UpdateStopwatch();
     }
 
     public void Pause()
@@ -53,20 +70,6 @@ public class Stopwatch
         ElapsedTimeTillPause = DateTime.Now - StartTime;
         IsRunning = false;
         IsFirstStart = false;
-    }
-
-    public void Resume()
-    {
-        if (IsRunning)
-            return;
-
-        IsRunning = true;
-        StartTime = DateTime.Now - ElapsedTimeTillPause;
-
-        if (IsFirstStart)
-            Start();
-        else
-            Timer.Start();
     }
 
     public void Reset()

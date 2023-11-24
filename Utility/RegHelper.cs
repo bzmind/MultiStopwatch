@@ -7,75 +7,83 @@ namespace MultiStopwatch.Utility;
 public static class RegHelper
 {
     public static string AppName => "MultiStopwatch";
-    private static string ActiveWindowsRegPath => MultiStopwatchWindow.ActiveWindowsRegPath;
+    public static string ActiveWindowsRegPath => @$"SOFTWARE\{AppName}\ActiveWindows";
     private static string WindowPositionRegPath => @$"SOFTWARE\{AppName}\Position";
     private static string WindowScaleRegPath => @$"SOFTWARE\{AppName}\Scale";
 
     public static void SaveWindowOnOrOffInReg(AppWindow window, string onOrOff)
     {
+        var key = Registry.CurrentUser.CreateSubKey(ActiveWindowsRegPath);
+
         if (window == AppWindow.Stopwatch)
-        {
-            var key = Registry.CurrentUser.CreateSubKey(ActiveWindowsRegPath);
             key.SetValue(nameof(AppWindow.Stopwatch), onOrOff == "ON" ? "ON" : "OFF");
-            key.Close();
-        }
-        else
-        {
-            var key = Registry.CurrentUser.CreateSubKey(ActiveWindowsRegPath);
+        else if (window == AppWindow.MultiStopwatch)
             key.SetValue(nameof(AppWindow.MultiStopwatch), onOrOff == "ON" ? "ON" : "OFF");
-            key.Close();
-        }
+        else
+            key.SetValue(nameof(AppWindow.Pomodoro), onOrOff == "ON" ? "ON" : "OFF");
+
+        key.Close();
     }
 
     public static bool IsWindowActive(AppWindow window)
     {
+        var key = Registry.CurrentUser.OpenSubKey(ActiveWindowsRegPath);
+
+        if (key == null)
+            return true;
+
         if (window == AppWindow.Stopwatch)
         {
-            var key = Registry.CurrentUser.OpenSubKey(ActiveWindowsRegPath);
+            var isStopwatchOn = key.GetValue(nameof(AppWindow.Stopwatch));
 
-            if (key == null)
-                return true;
-
-            var stopwatchWindow = key.GetValue(nameof(AppWindow.Stopwatch));
-
-            if (stopwatchWindow == null)
+            if (isStopwatchOn == null)
                 return true;
 
             key.Close();
 
-            return stopwatchWindow.ToString() == "ON";
+            return isStopwatchOn.ToString() == "ON";
         }
-        else
+
+        if (window == AppWindow.MultiStopwatch)
         {
-            var key = Registry.CurrentUser.OpenSubKey(ActiveWindowsRegPath);
+            var isMultiStopwatchOn = key.GetValue(nameof(AppWindow.MultiStopwatch));
 
-            if (key == null)
-                return true;
-
-            var multiStopwatch = key.GetValue(nameof(AppWindow.MultiStopwatch));
-
-            if (multiStopwatch == null)
+            if (isMultiStopwatchOn == null)
                 return true;
 
             key.Close();
 
-            return multiStopwatch.ToString() == "ON";
+            return isMultiStopwatchOn.ToString() == "ON";
         }
+
+        var isPomodoroOn = key.GetValue(nameof(AppWindow.Pomodoro));
+
+        if (isPomodoroOn == null)
+            return true;
+
+        key.Close();
+
+        return isPomodoroOn.ToString() == "ON";
     }
 
     public static void SaveWindowPosition(AppWindow window, double left, double top)
     {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(WindowPositionRegPath);
+        var key = Registry.CurrentUser.CreateSubKey(WindowPositionRegPath);
 
         if (window == AppWindow.MultiStopwatch)
         {
             key.SetValue("MultiStopwatch_Left", left);
             key.SetValue("MultiStopwatch_Top", top);
         }
-        else
+        else if (window == AppWindow.Stopwatch)
         {
             key.SetValue("Stopwatch_Left", left);
             key.SetValue("Stopwatch_Top", top);
+        }
+        else
+        {
+            key.SetValue("Pomodoro_Left", left);
+            key.SetValue("Pomodoro_Top", top);
         }
 
         key.Close();
@@ -83,23 +91,22 @@ public static class RegHelper
 
     public static WinPos RestoreWindowPosition(AppWindow window, double width, double height)
     {
-        RegistryKey? key = Registry.CurrentUser.OpenSubKey(WindowPositionRegPath);
+        var key = Registry.CurrentUser.OpenSubKey(WindowPositionRegPath);
         var winPos = new WinPos();
 
-        if (window == AppWindow.MultiStopwatch
-            && (key == null
-            || key.GetValue("MultiStopwatch_Left") == null
-            || key.GetValue("MultiStopwatch_Top") == null))
+        if ((window == AppWindow.MultiStopwatch
+             && (key == null
+                 || key.GetValue("MultiStopwatch_Left") == null
+                 || key.GetValue("MultiStopwatch_Top") == null))
+            || (window == AppWindow.Stopwatch
+                && (key == null
+                    || key.GetValue("Stopwatch_Left") == null
+                    || key.GetValue("Stopwatch_Top") == null))
+            || (window == AppWindow.Pomodoro
+                && (key == null
+                    || key.GetValue("Pomodoro_Left") == null
+                    || key.GetValue("Pomodoro_Top") == null)))
         {
-            winPos.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
-            winPos.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
-        }
-        else if (window == AppWindow.Stopwatch
-            && (key == null
-            || key.GetValue("Stopwatch_Left") == null
-            || key.GetValue("Stopwatch_Top") == null))
-        {
-
             winPos.Left = (SystemParameters.PrimaryScreenWidth - width) / 2;
             winPos.Top = (SystemParameters.PrimaryScreenHeight - height) / 2;
         }
@@ -113,10 +120,15 @@ public static class RegHelper
                 left = Convert.ToDouble(key.GetValue("MultiStopwatch_Left"));
                 top = Convert.ToDouble(key.GetValue("MultiStopwatch_Top"));
             }
-            else
+            else if (window == AppWindow.Stopwatch)
             {
                 left = Convert.ToDouble(key.GetValue("Stopwatch_Left"));
                 top = Convert.ToDouble(key.GetValue("Stopwatch_Top"));
+            }
+            else
+            {
+                left = Convert.ToDouble(key.GetValue("Pomodoro_Left"));
+                top = Convert.ToDouble(key.GetValue("Pomodoro_Top"));
             }
 
             winPos.Left = left;
@@ -157,14 +169,14 @@ public static class RegHelper
 
     public static void SaveWindowScale(int scale)
     {
-        RegistryKey key = Registry.CurrentUser.CreateSubKey(WindowScaleRegPath);
+        var key = Registry.CurrentUser.CreateSubKey(WindowScaleRegPath);
         key.SetValue("Scale", scale, RegistryValueKind.String);
         key.Close();
     }
 
     public static int RestoreWindowScale()
     {
-        RegistryKey? key = Registry.CurrentUser.OpenSubKey(WindowScaleRegPath);
+        var key = Registry.CurrentUser.OpenSubKey(WindowScaleRegPath);
         int _scale;
 
         if (key == null || key.GetValue("Scale") == null)
@@ -180,5 +192,6 @@ public static class RegHelper
 public enum AppWindow
 {
     Stopwatch,
-    MultiStopwatch
+    MultiStopwatch,
+    Pomodoro
 }

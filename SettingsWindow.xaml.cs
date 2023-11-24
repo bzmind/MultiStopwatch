@@ -10,16 +10,18 @@ public partial class SettingsWindow : Window
 {
     private readonly MultiStopwatchWindow _multiStopwatchWindow;
     private readonly StopwatchWindow _stopwatchWindow;
+    private readonly PomodoroWindow _pomodoroWindow;
     private bool _isInitializing = true;
 
-    public SettingsWindow(MultiStopwatchWindow multiStopwatchWindow, StopwatchWindow stopwatchWindow)
+    public SettingsWindow(MultiStopwatchWindow multiStopwatchWindow, StopwatchWindow stopwatchWindow,
+        PomodoroWindow pomodoroWindow)
     {
         InitializeComponent();
-
         Loaded += OnLoaded;
 
         _multiStopwatchWindow = multiStopwatchWindow;
         _stopwatchWindow = stopwatchWindow;
+        _pomodoroWindow = pomodoroWindow;
 
         _multiStopwatchWindow.Closed += OnMultiStopwatchAppClosing;
 
@@ -78,13 +80,19 @@ public partial class SettingsWindow : Window
     private void StopwatchCheckbox_OnChecked(object sender, RoutedEventArgs e)
     {
         if (!_isInitializing)
-            ToggleStopwatchBtn();
+            ToggleCheckBox(AppWindow.Stopwatch);
     }
 
     private void MultiStopwatchCheckbox_OnChecked(object sender, RoutedEventArgs e)
     {
         if (!_isInitializing)
-            ToggleMultiStopwatchBtn();
+            ToggleCheckBox(AppWindow.MultiStopwatch);
+    }
+
+    private void PomodoroCheckbox_OnChecked(object sender, RoutedEventArgs e)
+    {
+        if (!_isInitializing)
+            ToggleCheckBox(AppWindow.Pomodoro);
     }
 
     private void StartupCheckbox_OnChecked(object sender, RoutedEventArgs e)
@@ -93,35 +101,37 @@ public partial class SettingsWindow : Window
             ToggleStartup();
     }
 
-    public void ToggleStopwatchBtn()
+    public void ToggleCheckBox(AppWindow window)
     {
-        if (RegHelper.IsWindowActive(AppWindow.Stopwatch))
+        if (RegHelper.IsWindowActive(window))
         {
-            _stopwatchWindow.ResetStopwatch();
-            _stopwatchWindow.Hide();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.Stopwatch, "OFF");
+            if (window == AppWindow.MultiStopwatch)
+            {
+                _multiStopwatchWindow.ResetStopwatches();
+                _multiStopwatchWindow.Hide();
+            }
+            else if (window == AppWindow.Stopwatch)
+            {
+                _stopwatchWindow.ResetStopwatch();
+                _stopwatchWindow.Hide();
+            }
+            else
+            {
+                _pomodoroWindow.ResetStopwatches();
+                _pomodoroWindow.Hide();
+            }
+            RegHelper.SaveWindowOnOrOffInReg(window, "OFF");
         }
         else
         {
-            if (IsVisible)
-                _stopwatchWindow.Show();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.Stopwatch, "ON");
-        }
-    }
-
-    public void ToggleMultiStopwatchBtn()
-    {
-        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
-        {
-            _multiStopwatchWindow.ResetStopwatches();
-            _multiStopwatchWindow.Hide();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.MultiStopwatch, "OFF");
-        }
-        else
-        {
-            if (_stopwatchWindow.IsVisible)
+            if (window == AppWindow.MultiStopwatch && !_multiStopwatchWindow.IsVisible)
                 _multiStopwatchWindow.Show();
-            RegHelper.SaveWindowOnOrOffInReg(AppWindow.MultiStopwatch, "ON");
+            else if (window == AppWindow.Stopwatch && !_stopwatchWindow.IsVisible)
+                _stopwatchWindow.Show();
+            else if (window == AppWindow.Pomodoro && !_pomodoroWindow.IsVisible)
+                _pomodoroWindow.Show();
+
+            RegHelper.SaveWindowOnOrOffInReg(window, "ON");
         }
     }
 

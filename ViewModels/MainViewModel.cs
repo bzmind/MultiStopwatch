@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
-using MultiStopwatch.Annotations;
+using MultiStopwatch.Properties;
 
 namespace MultiStopwatch.ViewModels;
 
@@ -30,6 +30,17 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool _pomodoroCheckBox { get; set; }
+    public bool PomodoroCheckBox
+    {
+        get => _pomodoroCheckBox;
+        set
+        {
+            _pomodoroCheckBox = value;
+            OnPropertyChanged(nameof(PomodoroCheckBox));
+        }
+    }
+
     public bool _startupCheckBox { get; set; }
     public bool StartupCheckBox
     {
@@ -41,36 +52,36 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _toggleBothBtnLabel;
-    public string ToggleBothBtnLabel
+    private string _toggleAllLabelText;
+    public string ToggleAllLabelText
     {
-        get => _toggleBothBtnLabel;
+        get => _toggleAllLabelText;
         set
         {
-            _toggleBothBtnLabel = value;
-            OnPropertyChanged(nameof(ToggleBothBtnLabel));
+            _toggleAllLabelText = value;
+            OnPropertyChanged(nameof(ToggleAllLabelText));
         }
     }
 
-    public ImageSource _toggleBothBtnIcon { get; set; }
-    public ImageSource ToggleBothBtnIcon
+    public ImageSource _toggleAllIcon { get; set; }
+    public ImageSource ToggleAllIcon
     {
-        get => _toggleBothBtnIcon;
+        get => _toggleAllIcon;
         set
         {
-            _toggleBothBtnIcon = value;
-            OnPropertyChanged(nameof(ToggleBothBtnIcon));
+            _toggleAllIcon = value;
+            OnPropertyChanged(nameof(ToggleAllIcon));
         }
     }
 
-    private bool _toggleBothBtnEnabled = true;
-    public bool ToggleBothBtnEnabled
+    private bool _isIsToggleAllEnabled = true;
+    public bool IsToggleAllEnabled
     {
-        get => _toggleBothBtnEnabled;
+        get => _isIsToggleAllEnabled;
         set
         {
-            _toggleBothBtnEnabled = value;
-            OnPropertyChanged(nameof(ToggleBothBtnEnabled));
+            _isIsToggleAllEnabled = value;
+            OnPropertyChanged(nameof(IsToggleAllEnabled));
         }
     }
 

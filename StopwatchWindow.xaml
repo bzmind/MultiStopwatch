@@ -1,24 +1,22 @@
-﻿<Window x:Class="MultiStopwatch.StopwatchWindow"
+﻿<models:AbstractWindow x:Class="MultiStopwatch.StopwatchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:utility="clr-namespace:MultiStopwatch.Utility"
+        xmlns:models="clr-namespace:MultiStopwatch.Models"
         mc:Ignorable="d"
         Title="MultiStopwatchWindow"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
-        ShowInTaskbar="False" Topmost="True" Height="28" Width="112"
+        ShowInTaskbar="False" Topmost="True" Height="25" Width="106"
         utility:EnableDragHelper.EnableDrag="True">
-  <Window.Clip>
-    <RectangleGeometry Rect="0,0,112,28" RadiusX="5.5" RadiusY="5.5" />
-  </Window.Clip>
-  <Window.Resources>
+  <models:AbstractWindow.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="assets/Icons.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
-  </Window.Resources>
+  </models:AbstractWindow.Resources>
   <Viewbox Stretch="Uniform">
     <Viewbox.RenderTransform>
       <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" />
@@ -26,12 +24,12 @@
     <Grid>
       <Border Background="Black" CornerRadius="4">
         <Grid>
-          <Button x:Name="StartBtn" Margin="0,0,83,0" Width="21" Height="21" Cursor="Hand"
+          <Button x:Name="StartBtn" Margin="2.1,2,83,2" Width="21" Height="21" Cursor="Hand"
                 Click="StartBtn_OnClick">
             <Button.Template>
               <ControlTemplate TargetType="Button">
                 <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5"
-                      RenderTransformOrigin="0.5,0.5">
+                        RenderTransformOrigin="0.5,0.5">
                   <Border.RenderTransform>
                     <ScaleTransform />
                   </Border.RenderTransform>
@@ -81,7 +79,7 @@
               <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
             </Grid>
           </Button>
-          <Button x:Name="ResetButton" Margin="0,0,37,0" Width="21" Height="21" Cursor="Hand"
+          <Button x:Name="ResetButton" Margin="25,2,60,2" Width="21" Height="21" Cursor="Hand"
                 Click="ResetButton_OnClick">
             <Button.Template>
               <ControlTemplate TargetType="Button">
@@ -139,9 +137,9 @@
           <TextBox x:Name="FirstStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
                  FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
                  FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#DCDCDC"
-                 Background="Transparent" Height="13" Margin="48,4.5,0,7.5" Text="00:00:00"/>
+                 Background="Transparent" Margin="46,0,0,0" Text="00:00:00" Height="9" Padding="-3.35"/>
         </Grid>
       </Border>
     </Grid>
   </Viewbox>
-</Window>  
+</models:AbstractWindow>  

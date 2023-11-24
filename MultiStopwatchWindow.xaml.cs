@@ -11,31 +11,33 @@ using PowerLineStatus = System.Windows.Forms.PowerLineStatus;
 
 namespace MultiStopwatch;
 
-public partial class MultiStopwatchWindow : Window
+public partial class MultiStopwatchWindow : AbstractWindow
 {
-    public static string AppName => "MultiStopwatch";
-    public static string ActiveWindowsRegPath => @$"SOFTWARE\{AppName}\ActiveWindows";
-    public Stopwatch FirstStopwatch { get; set; }
-    public Stopwatch SecondStopwatch { get; set; }
+    public MainStopwatch GreenStopwatch { get; set; }
+    public MainStopwatch RedStopwatch { get; set; }
     public MainViewModel ViewModel { get; set; }
     public StopwatchWindow StopwatchWindow { get; set; }
+    public PomodoroWindow PomodoroWindow { get; set; }
 
-    public MultiStopwatchWindow(StopwatchWindow stopwatchWindow)
+    public MultiStopwatchWindow(StopwatchWindow stopwatchWindow, PomodoroWindow pomodoroWindow)
     {
         InitializeComponent();
+        Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
-        NotifyIcon.TrayLeftMouseDown += CtxToggleBothBtn_OnClick;
-        NotifyIcon.ContextMenu.Closed += NotifyIconOnContextMenuClosed;
         SystemEvents.PowerModeChanged += PowerModeChanged;
 
+        NotifyIcon.TrayLeftMouseDown += ToggleAll_OnClick;
+        NotifyIcon.ContextMenu.Closed += NotifyIconOnContextMenuClosed;
+
+        PomodoroWindow = pomodoroWindow;
         StopwatchWindow = stopwatchWindow;
-        FirstStopwatch = new Stopwatch(FirstStopwatchTextBox);
-        SecondStopwatch = new Stopwatch(SecondStopwatchTextBox);
+        GreenStopwatch = new MainStopwatch(GreenStopwatchTextBox);
+        RedStopwatch = new MainStopwatch(RedStopwatchTextBox);
 
         ViewModel = new MainViewModel();
         DataContext = ViewModel;
 
-        RestoreWindowPosition();
+        RestoreWindowPosition(AppWindow.MultiStopwatch);
         RestoreWindowsScales();
     }
 
@@ -55,9 +57,9 @@ public partial class MultiStopwatchWindow : Window
         }
     }
 
-    private void CtxSettingsBtn_OnClick(object sender, RoutedEventArgs e)
+    private void Settings_OnClick(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow(this, StopwatchWindow);
+        var settingsWindow = new SettingsWindow(this, StopwatchWindow, PomodoroWindow);
         settingsWindow.Show();
     }
 
@@ -65,6 +67,7 @@ public partial class MultiStopwatchWindow : Window
     {
         ViewModel.Scale = scale;
         StopwatchWindow.ViewModel.Scale = scale;
+        PomodoroWindow.ViewModel.Scale = scale;
     }
 
     public void RestoreWindowsScales()
@@ -82,50 +85,40 @@ public partial class MultiStopwatchWindow : Window
     public void RefreshContextMenuItems()
     {
         ViewModel.StopwatchCheckBox = RegHelper.IsWindowActive(AppWindow.Stopwatch);
-
         ViewModel.MultiStopwatchCheckBox = RegHelper.IsWindowActive(AppWindow.MultiStopwatch);
-
+        ViewModel.PomodoroCheckBox = RegHelper.IsWindowActive(AppWindow.Pomodoro);
         ViewModel.StartupCheckBox = RegHelper.IsStartupEnabled();
 
-        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 1 ||
-            RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 1)
+        if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 1
+            || RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 1
+            || RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 1)
         {
-            ViewModel.ToggleBothBtnEnabled = true;
-            ViewModel.ToggleBothBtnLabel = "Hide All";
-            ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("HideDrawingImage");
+            ViewModel.IsToggleAllEnabled = true;
+            ViewModel.ToggleAllLabelText = "Hide All";
+            ViewModel.ToggleAllIcon = (ImageSource)FindResource("HideDrawingImage");
         }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 ||
-                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
+        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0
+                 || RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0
+                 || RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
-            ViewModel.ToggleBothBtnEnabled = true;
-            ViewModel.ToggleBothBtnLabel = "Show All";
-            ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
+            ViewModel.IsToggleAllEnabled = true;
+            ViewModel.ToggleAllLabelText = "Show All";
+            ViewModel.ToggleAllIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
         else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
-                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
+                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
+                 !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
-            ViewModel.ToggleBothBtnEnabled = false;
-            ViewModel.ToggleBothBtnLabel = "Show All";
-            ViewModel.ToggleBothBtnIcon = (ImageSource)FindResource("ShowDrawingImage");
+            ViewModel.IsToggleAllEnabled = false;
+            ViewModel.ToggleAllLabelText = "Show All";
+            ViewModel.ToggleAllIcon = (ImageSource)FindResource("ShowDrawingImage");
         }
     }
 
-    private void OnClosing(object? o, EventArgs eventArgs)
+    protected override void OnClosing(object? o, EventArgs eventArgs)
     {
-        SaveWindowPosition();
+        SaveWindowPosition(AppWindow.MultiStopwatch);
         NotifyIcon.Dispose();
-    }
-
-    private void SaveWindowPosition()
-    {
-        RegHelper.SaveWindowPosition(AppWindow.MultiStopwatch, Left, Top);
-    }
-
-    private void RestoreWindowPosition()
-    {
-        var winPos = RegHelper.RestoreWindowPosition(AppWindow.MultiStopwatch, Width, Height);
-        Left = winPos.Left;
-        Top = winPos.Top;
     }
 
     private void ResetButton_OnClick(object sender, RoutedEventArgs e)
@@ -135,8 +128,8 @@ public partial class MultiStopwatchWindow : Window
 
     public void ResetStopwatches()
     {
-        FirstStopwatch.Reset();
-        SecondStopwatch.Reset();
+        GreenStopwatch.Reset();
+        RedStopwatch.Reset();
         StartButton.Click -= StartButton_OnClick;
         StartButton.Click -= SwitchButton_OnClick;
         StartButton.Click += StartButton_OnClick;
@@ -145,7 +138,7 @@ public partial class MultiStopwatchWindow : Window
 
     private void StartButton_OnClick(object sender, RoutedEventArgs e)
     {
-        FirstStopwatch.Start();
+        GreenStopwatch.Start();
         StartButton.Click -= StartButton_OnClick;
         StartButton.Click += SwitchButton_OnClick;
         StartBtnIcon.Source = (ImageSource)FindResource("SwitchDrawingImage");
@@ -153,84 +146,95 @@ public partial class MultiStopwatchWindow : Window
 
     private void SwitchButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (FirstStopwatch.IsRunning)
+        if (GreenStopwatch.IsRunning)
         {
-            FirstStopwatch.Pause();
-            SecondStopwatch.Resume();
+            GreenStopwatch.Pause();
+            RedStopwatch.Start();
             StartBtnIcon.Source = (ImageSource)FindResource("FlippedSwitchDrawingImage");
         }
-        else if (SecondStopwatch.IsRunning)
+        else if (RedStopwatch.IsRunning)
         {
-            SecondStopwatch.Pause();
-            FirstStopwatch.Resume();
+            RedStopwatch.Pause();
+            GreenStopwatch.Start();
             StartBtnIcon.Source = (ImageSource)FindResource("SwitchDrawingImage");
         }
     }
 
-
-    private void CtxToggleBothBtn_OnClick(object sender, RoutedEventArgs e)
+    private void ToggleAll_OnClick(object sender, RoutedEventArgs e)
     {
-        ToggleBothBtn();
+        ToggleAll();
         RefreshContextMenuItems();
     }
 
-    public void ResetTopMost()
+    private void ToggleAll()
     {
-        Topmost = false;
-        Topmost = true;
-    }
-
-    private void ToggleBothBtn()
-    {
-        if (Opacity == 1 && StopwatchWindow.Opacity == 1)
+        if (Opacity == 1 && StopwatchWindow.Opacity == 1 && PomodoroWindow.Opacity == 1)
         {
             Opacity = 0;
             StopwatchWindow.Opacity = 0;
+            PomodoroWindow.Opacity = 0;
             ResetTopMost();
             StopwatchWindow.ResetTopMost();
+            PomodoroWindow.ResetTopMost();
         }
         else if (Opacity == 1)
         {
             Opacity = 0;
             ResetTopMost();
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            ViewModel.ToggleAllLabelText = "Show All";
         }
         else if (StopwatchWindow.Opacity == 1)
         {
             StopwatchWindow.Opacity = 0;
             StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            ViewModel.ToggleAllLabelText = "Show All";
+        }
+        else if (PomodoroWindow.Opacity == 1)
+        {
+            PomodoroWindow.Opacity = 0;
+            PomodoroWindow.ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Show All";
         }
         else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
-                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
+                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
+                 RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
             Opacity = 1;
             StopwatchWindow.Opacity = 1;
+            PomodoroWindow.Opacity = 1;
             ResetTopMost();
             StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            PomodoroWindow.ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Show All";
         }
         else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0)
         {
             Opacity = 1;
             ResetTopMost();
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            ViewModel.ToggleAllLabelText = "Show All";
         }
         else if (RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
         {
             StopwatchWindow.Opacity = 1;
             StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            ViewModel.ToggleAllLabelText = "Show All";
+        }
+        else if (RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
+        {
+            PomodoroWindow.Opacity = 1;
+            PomodoroWindow.ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Show All";
         }
         else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
-                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
+                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
+                 !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
-            ViewModel.ToggleBothBtnEnabled = false;
-            ViewModel.ToggleBothBtnLabel = "Show All";
+            ViewModel.IsToggleAllEnabled = false;
+            ViewModel.ToggleAllLabelText = "Show All";
         }
     }
 
-    private void CtxExitButton_OnClick(object sender, RoutedEventArgs e)
+    private void Exit_OnClick(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
     }
