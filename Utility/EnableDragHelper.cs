@@ -12,19 +12,13 @@ public class EnableDragHelper
 
     private static void OnLoaded(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
     {
-        if (dependencyObject is not UIElement uiElement
-            || dependencyPropertyChangedEventArgs.NewValue is bool == false)
-        {
+        if (dependencyObject is not UIElement uiElement || dependencyPropertyChangedEventArgs.NewValue is bool == false)
             return;
-        }
+
         if ((bool)dependencyPropertyChangedEventArgs.NewValue == true)
-        {
             uiElement.MouseMove += UIElementOnMouseMove;
-        }
         else
-        {
             uiElement.MouseMove -= UIElementOnMouseMove;
-        }
     }
 
     private static void UIElementOnMouseMove(object sender, MouseEventArgs mouseEventArgs)
@@ -52,7 +46,7 @@ public class EnableDragHelper
         {
             window.DragMove();
         }
-        catch (Exception)
+        catch (InvalidOperationException)
         {
             // ignored
         }

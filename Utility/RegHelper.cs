@@ -167,25 +167,25 @@ public static class RegHelper
         registryKey?.DeleteValue(AppName, false);
     }
 
-    public static void SaveWindowScale(int scale)
+    public static void SaveWindowScale(double scale)
     {
         var key = Registry.CurrentUser.CreateSubKey(WindowScaleRegPath);
         key.SetValue("Scale", scale, RegistryValueKind.String);
         key.Close();
     }
 
-    public static int RestoreWindowScale()
+    public static double RestoreWindowScale()
     {
         var key = Registry.CurrentUser.OpenSubKey(WindowScaleRegPath);
-        int _scale;
+        double scale;
 
         if (key == null || key.GetValue("Scale") == null)
-            _scale = 100;
+            scale = 100;
         else
-            _scale = Convert.ToInt32(key.GetValue("Scale"));
+            scale = Convert.ToDouble(key.GetValue("Scale"));
 
         key?.Close();
-        return _scale;
+        return scale;
     }
 }
 

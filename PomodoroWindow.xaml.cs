@@ -15,9 +15,9 @@ public partial class PomodoroWindow : AbstractWindow
     public enum PomodoroState { Off, Study, Break, LongBreak }
     public PomodoroState State { get; set; } = PomodoroState.Off;
 
-    private const double StudyDuration = 3;
-    private const double BreakDuration = 3;
-    private const double LongBreakDuration = 6;
+    private const double StudyDuration = 25 * 60;
+    private const double BreakDuration = 5 * 60;
+    private const double LongBreakDuration = 20 * 60;
 
     private int _studySessions;
     private DateTime _shortBreakStart;
@@ -46,14 +46,14 @@ public partial class PomodoroWindow : AbstractWindow
 
     public void OnObserverTimerTick(object? o, EventArgs e)
     {
-        Console.WriteLine(GreenStopwatch.GetElapsedTime());
         if (State == PomodoroState.Study)
         {
-            var elapsedSeconds = (int)GreenStopwatch.ElapsedTime.TotalSeconds;
-            var division = TruncateDecimal(elapsedSeconds / StudyDuration, 1);
+            var elapsedSeconds = GreenStopwatch.ElapsedTime;
+            var division = elapsedSeconds / StudyDuration.TruncateDecimal(2);
             var roundedDivision = Math.Round(elapsedSeconds / StudyDuration);
             var isRepetitive = elapsedSeconds == _lastValidStudyNumber;
-            var isItTimeToBreak = elapsedSeconds != 0 && division == roundedDivision && isRepetitive == false;
+            var isItTimeToBreak = elapsedSeconds != 0 && division == roundedDivision
+                                                      && isRepetitive == false && division >= 0.1;
 
             if (isItTimeToBreak && _studySessions == 3)
             {
@@ -89,10 +89,12 @@ public partial class PomodoroWindow : AbstractWindow
                 amount = _amountOfShortBreakTillNow + elapsedSeconds;
                 isRepetitive = amount == _lastValidBreakNumber;
             }
-            var division = TruncateDecimal(amount / BreakDuration, 1);
+
+            var division = amount / BreakDuration.TruncateDecimal(2);
             var roundedDivision = Math.Round(amount / BreakDuration);
-            var isItTimeToStudy = amount != 0 && division == roundedDivision && isRepetitive == false
-                                  && elapsedSeconds != 0;
+            var isItTimeToStudy = amount != 0 && division == roundedDivision
+                                              && isRepetitive == false && division >= 0.1
+                                              && elapsedSeconds != 0;
 
             if (isItTimeToStudy)
             {
@@ -119,10 +121,11 @@ public partial class PomodoroWindow : AbstractWindow
                 amount = _amountOfLongBreakTillNow + elapsedSeconds;
                 isRepetitive = amount == _lastValidLongBreakNumber;
             }
-            var division = TruncateDecimal(amount / LongBreakDuration, 1);
+            var division = amount / LongBreakDuration.TruncateDecimal(2);
             var roundedDivision = Math.Round(amount / LongBreakDuration);
-            var isItTimeToStudy = amount != 0 && division == roundedDivision && isRepetitive == false
-                && elapsedSeconds != 0;
+            var isItTimeToStudy = amount != 0 && division == roundedDivision
+                                              && isRepetitive == false && division >= 0.1
+                                              && elapsedSeconds != 0;
 
             if (isItTimeToStudy)
             {
@@ -134,12 +137,6 @@ public partial class PomodoroWindow : AbstractWindow
                 State = PomodoroState.Study;
             }
         }
-    }
-
-    public static double TruncateDecimal(double number, int decimals)
-    {
-        var factor = Math.Pow(10, decimals);
-        return Math.Truncate(number * factor) / factor;
     }
 
     protected override void OnClosing(object? o, EventArgs eventArgs)

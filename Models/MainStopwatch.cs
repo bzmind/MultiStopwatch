@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using MultiStopwatch.Utility;
 
 namespace MultiStopwatch.Models;
 
 public class MainStopwatch
 {
-    private DateTime StartTime { get; set; }
-    public TimeSpan ElapsedTime { get; set; }
+    public DateTime StartTime { get; set; }
+    public int ElapsedTime { get; set; }
     private TimeSpan ElapsedTimeTillPause { get; set; }
     public DispatcherTimer Timer { get; set; }
     private TextBox TextBox { get; set; }
@@ -16,7 +17,7 @@ public class MainStopwatch
 
     public MainStopwatch(TextBox textBox)
     {
-        Timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        Timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
         Timer.Tick += OnTick;
         TextBox = textBox;
     }
@@ -25,19 +26,14 @@ public class MainStopwatch
     {
         if (IsRunning)
         {
-            ElapsedTime = ElapsedTime.Add(TimeSpan.FromSeconds(1));
+            ElapsedTime = (int)Math.Round((DateTime.Now - StartTime).TotalSeconds);
             UpdateStopwatch();
         }
     }
 
-    public string GetElapsedTime()
-    {
-        return ElapsedTime.ToString(@"hh\:mm\:ss");
-    }
-
     private void UpdateStopwatch()
     {
-        TextBox.Text = GetElapsedTime();
+        TextBox.Text = TimeSpan.FromSeconds(ElapsedTime).ToString(@"hh\:mm\:ss");
     }
 
     public void Start()
@@ -61,7 +57,6 @@ public class MainStopwatch
             else
                 Timer.Start();
         }
-        UpdateStopwatch();
     }
 
     public void Pause()
@@ -74,7 +69,7 @@ public class MainStopwatch
 
     public void Reset()
     {
-        ElapsedTime = TimeSpan.Zero;
+        ElapsedTime = 0;
         Timer.Stop();
         UpdateStopwatch();
         IsFirstStart = true;

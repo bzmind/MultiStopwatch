@@ -11,20 +11,20 @@ public partial class App : Application
         var stopwatchWindow = new StopwatchWindow();
         var multiStopwatchWindow = new MultiStopwatchWindow(stopwatchWindow, pomodoroWindow);
 
-        if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
-            multiStopwatchWindow.Hide();
+        if (!RegHelper.IsWindowActive(AppWindow.Pomodoro))
+            pomodoroWindow.Hide();
         else
-            multiStopwatchWindow.Show();
+            pomodoroWindow.Show();
 
         if (!RegHelper.IsWindowActive(AppWindow.Stopwatch))
             stopwatchWindow.Hide();
         else
             stopwatchWindow.Show();
 
-        if (!RegHelper.IsWindowActive(AppWindow.Pomodoro))
-            pomodoroWindow.Hide();
+        if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
+            multiStopwatchWindow.Hide();
         else
-            pomodoroWindow.Show();
+            multiStopwatchWindow.Show();
 
         if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch)
             && !RegHelper.IsWindowActive(AppWindow.Stopwatch)

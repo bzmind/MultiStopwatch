@@ -5,13 +5,19 @@
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Stopwatch.ico</ApplicationIcon>
+    <ApplicationIcon>assets\Stopwatch.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Stopwatch.ico" />
+    <None Remove="assets\fonts\JetBrainsMono-SemiBold.ttf" />
+    <None Remove="assets\Stopwatch.ico" />
+    <None Remove="MultiStopwatchWindow.xaml.cs~RF742585.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="assets\Icons.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,9 +26,12 @@
 
   <ItemGroup>
     <Resource Include="assets\fonts\JetBrainsMono-SemiBold.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="assets\Stopwatch.ico" />
+    <Resource Include="assets\Icons.xaml" />
+    <Resource Include="assets\Stopwatch.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

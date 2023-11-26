@@ -83,13 +83,13 @@
 
           <TextBox x:Name="GreenStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
                FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
-               FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#24D167"
+               FontFamily="./assets/fonts/JetBrainsMono-SemiBold.ttf#JetBrains Mono SemiBold" FontWeight="SemiBold" Foreground="#24D167"
                Background="Transparent" Height="9" Margin="23,2,0,12" Text="00:00:00" 
                Padding="-3.35"/>
 
           <TextBox x:Name="RedStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
                FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
-               FontFamily="JetBrains Mono" FontWeight="SemiBold" Foreground="#FF5050"
+               FontFamily="./assets/fonts/JetBrainsMono-SemiBold.ttf#JetBrains Mono SemiBold" FontWeight="SemiBold" Foreground="#FF5050"
                Background="Transparent" Height="9" Margin="23,12,0,2" Text="00:00:00" 
                Padding="-3.35"/>
         </Grid>

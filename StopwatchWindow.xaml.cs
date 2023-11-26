@@ -10,7 +10,7 @@ namespace MultiStopwatch;
 
 public partial class StopwatchWindow : AbstractWindow
 {
-    public MainStopwatch FirstMainStopwatch { get; set; }
+    public MainStopwatch Stopwatch { get; set; }
     public MainViewModel ViewModel { get; set; }
 
     public StopwatchWindow()
@@ -19,7 +19,7 @@ public partial class StopwatchWindow : AbstractWindow
         Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
 
-        FirstMainStopwatch = new MainStopwatch(FirstStopwatchTextBox);
+        Stopwatch = new MainStopwatch(StopwatchTextBox);
 
         RestoreWindowPosition(AppWindow.Stopwatch);
 
@@ -34,7 +34,7 @@ public partial class StopwatchWindow : AbstractWindow
 
     private void StartBtn_OnClick(object sender, RoutedEventArgs e)
     {
-        FirstMainStopwatch.Start();
+        Stopwatch.Start();
         StartBtn.Click -= StartBtn_OnClick;
         StartBtn.Click += PauseButton_OnClick;
         StartBtnIcon.Source = (ImageSource)FindResource("PauseDrawingImage");
@@ -43,15 +43,15 @@ public partial class StopwatchWindow : AbstractWindow
 
     private void PauseButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (FirstMainStopwatch.IsRunning)
+        if (Stopwatch.IsRunning)
         {
-            FirstMainStopwatch.Pause();
+            Stopwatch.Pause();
             StartBtnIcon.Source = (ImageSource)FindResource("StartDrawingImage");
             SetBorderPadding(3.5);
         }
         else
         {
-            FirstMainStopwatch.Start();
+            Stopwatch.Start();
             StartBtnIcon.Source = (ImageSource)FindResource("PauseDrawingImage");
             SetBorderPadding(4);
         }
@@ -64,7 +64,7 @@ public partial class StopwatchWindow : AbstractWindow
 
     public void ResetStopwatch()
     {
-        FirstMainStopwatch.Reset();
+        Stopwatch.Reset();
         StartBtn.Click -= StartBtn_OnClick;
         StartBtn.Click -= PauseButton_OnClick;
         StartBtn.Click += StartBtn_OnClick;

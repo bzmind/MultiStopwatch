@@ -99,10 +99,10 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _scaleInput;
-    public int ScaleInput
+    private double _scaleInput;
+    public double ScaleInput
     {
-        get => Convert.ToInt32(Scale * 100);
+        get => Scale * 100;
         set
         {
             if (_scaleInput != value)
@@ -113,10 +113,10 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _scaleSlider;
-    public int ScaleSlider
+    private double _scaleSlider;
+    public double ScaleSlider
     {
-        get => Convert.ToInt32(Scale * 100);
+        get => Scale * 100;
         set
         {
             if (_scaleSlider != value)

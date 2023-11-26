@@ -59,15 +59,16 @@ public partial class MultiStopwatchWindow : AbstractWindow
 
     private void Settings_OnClick(object sender, RoutedEventArgs e)
     {
+        if (SettingsWindow.IsOpen) return;
         var settingsWindow = new SettingsWindow(this, StopwatchWindow, PomodoroWindow);
         settingsWindow.Show();
     }
 
     public void SetWindowsScales(double scale)
     {
-        ViewModel.Scale = scale;
-        StopwatchWindow.ViewModel.Scale = scale;
-        PomodoroWindow.ViewModel.Scale = scale;
+        ViewModel.Scale = scale.TruncateDecimal(4);
+        StopwatchWindow.ViewModel.Scale = scale.TruncateDecimal(4);
+        PomodoroWindow.ViewModel.Scale = scale.TruncateDecimal(4);
     }
 
     public void RestoreWindowsScales()
@@ -168,66 +169,48 @@ public partial class MultiStopwatchWindow : AbstractWindow
 
     private void ToggleAll()
     {
-        if (Opacity == 1 && StopwatchWindow.Opacity == 1 && PomodoroWindow.Opacity == 1)
-        {
-            Opacity = 0;
-            StopwatchWindow.Opacity = 0;
-            PomodoroWindow.Opacity = 0;
-            ResetTopMost();
-            StopwatchWindow.ResetTopMost();
-            PomodoroWindow.ResetTopMost();
-        }
-        else if (Opacity == 1)
-        {
-            Opacity = 0;
-            ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
-        }
-        else if (StopwatchWindow.Opacity == 1)
-        {
-            StopwatchWindow.Opacity = 0;
-            StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
-        }
-        else if (PomodoroWindow.Opacity == 1)
-        {
-            PomodoroWindow.Opacity = 0;
-            PomodoroWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
-        }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
-                 RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
-                 RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
-        {
-            Opacity = 1;
-            StopwatchWindow.Opacity = 1;
-            PomodoroWindow.Opacity = 1;
-            ResetTopMost();
-            StopwatchWindow.ResetTopMost();
-            PomodoroWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
-        }
-        else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0)
+        if (Opacity == 0 && RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
         {
             Opacity = 1;
             ResetTopMost();
             ViewModel.ToggleAllLabelText = "Show All";
         }
-        else if (RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0)
+        else if (Opacity == 1 && RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
+        {
+            Opacity = 0;
+            ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Hide All";
+        }
+
+        if (StopwatchWindow.Opacity == 0 && RegHelper.IsWindowActive(AppWindow.Stopwatch))
         {
             StopwatchWindow.Opacity = 1;
             StopwatchWindow.ResetTopMost();
             ViewModel.ToggleAllLabelText = "Show All";
         }
-        else if (RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
+        else if (StopwatchWindow.Opacity == 1 && RegHelper.IsWindowActive(AppWindow.Stopwatch))
+        {
+            StopwatchWindow.Opacity = 0;
+            StopwatchWindow.ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Hide All";
+        }
+
+        if (PomodoroWindow.Opacity == 0 && RegHelper.IsWindowActive(AppWindow.Pomodoro))
         {
             PomodoroWindow.Opacity = 1;
             PomodoroWindow.ResetTopMost();
             ViewModel.ToggleAllLabelText = "Show All";
         }
-        else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
-                 !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
-                 !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
+        else if (PomodoroWindow.Opacity == 1 && RegHelper.IsWindowActive(AppWindow.Pomodoro))
+        {
+            PomodoroWindow.Opacity = 0;
+            PomodoroWindow.ResetTopMost();
+            ViewModel.ToggleAllLabelText = "Hide All";
+        }
+
+        if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
+            !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
+            !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
             ViewModel.IsToggleAllEnabled = false;
             ViewModel.ToggleAllLabelText = "Show All";
