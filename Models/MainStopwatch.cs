@@ -26,7 +26,8 @@ public class MainStopwatch
     {
         if (IsRunning)
         {
-            ElapsedTime = (int)Math.Round((DateTime.Now - StartTime).TotalSeconds);
+            ElapsedTime = (int)(DateTime.Now - StartTime).TotalSeconds;
+            Console.WriteLine($"ElapsedTime: {ElapsedTime}");
             UpdateStopwatch();
         }
     }

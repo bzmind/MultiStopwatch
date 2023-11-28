@@ -25,9 +25,9 @@ public partial class PomodoroWindow : AbstractWindow
     private int _amountOfShortBreakTillNow;
     private int _amountOfLongBreakTillNow;
 
-    private int _lastValidStudyNumber;
-    private int _lastValidBreakNumber;
-    private int _lastValidLongBreakNumber;
+    private double _lastValidStudyNumber;
+    private double _lastValidBreakNumber;
+    private double _lastValidLongBreakNumber;
 
     public PomodoroWindow()
     {
