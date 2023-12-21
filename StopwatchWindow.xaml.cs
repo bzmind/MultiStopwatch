@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Win32;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
@@ -18,6 +19,7 @@ public partial class StopwatchWindow : AbstractWindow
         InitializeComponent();
         Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
+        SystemEvents.PowerModeChanged += PowerModeChanged<StopwatchWindow>;
 
         Stopwatch = new MainStopwatch(StopwatchTextBox);
 

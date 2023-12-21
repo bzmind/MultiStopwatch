@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
 using Application = System.Windows.Application;
-using PowerLineStatus = System.Windows.Forms.PowerLineStatus;
 
 namespace MultiStopwatch;
 
@@ -24,7 +22,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
         InitializeComponent();
         Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
-        SystemEvents.PowerModeChanged += PowerModeChanged;
+        SystemEvents.PowerModeChanged += PowerModeChanged<MultiStopwatchWindow>;
 
         NotifyIcon.TrayLeftMouseDown += ToggleAll_OnClick;
         NotifyIcon.ContextMenu.Closed += NotifyIconOnContextMenuClosed;
@@ -39,22 +37,6 @@ public partial class MultiStopwatchWindow : AbstractWindow
 
         RestoreWindowPosition(AppWindow.MultiStopwatch);
         RestoreWindowsScales();
-    }
-
-    private void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-    {
-        switch (e.Mode)
-        {
-            case PowerModes.StatusChange:
-                // The power status has changed (e.g., plugged in or unplugged)
-                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Offline)
-                {
-                    // Power outage detected
-                    // You can take appropriate actions here
-                    // For example, display a message or save application state
-                }
-                break;
-        }
     }
 
     private void Settings_OnClick(object sender, RoutedEventArgs e)

@@ -4,6 +4,7 @@ using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using System.Windows.Media;
 using MultiStopwatch.ViewModels;
+using Microsoft.Win32;
 
 namespace MultiStopwatch;
 
@@ -34,6 +35,7 @@ public partial class PomodoroWindow : AbstractWindow
         InitializeComponent();
         Loaded += (_, _) => ResetTopMost();
         Closed += OnClosing;
+        SystemEvents.PowerModeChanged += PowerModeChanged<PomodoroWindow>;
 
         GreenStopwatch = new MainStopwatch(GreenStopwatchTextBox);
         RedStopwatch = new MainStopwatch(RedStopwatchTextBox);
