@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="PomodoroWindow"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
-        ShowInTaskbar="False" Topmost="True" Height="25" Width="83"
+        ShowInTaskbar="False" Topmost="True" Height="25" Width="84"
         utility:EnableDragHelper.EnableDrag="True">
   <models:AbstractWindow.Resources>
     <ResourceDictionary>

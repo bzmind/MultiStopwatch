@@ -199,6 +199,13 @@ public partial class MultiStopwatchWindow : AbstractWindow
         }
     }
 
+    private void ResetPosition_OnClick(object sender, RoutedEventArgs e)
+    {
+        RestoreWindowPosition(AppWindow.MultiStopwatch);
+        StopwatchWindow.RestoreWindowPosition(AppWindow.Stopwatch);
+        PomodoroWindow.RestoreWindowPosition(AppWindow.Pomodoro);
+    }
+
     private void Exit_OnClick(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
