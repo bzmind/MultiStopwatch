@@ -23,7 +23,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
     public PomodoroWindow PomodoroWindow { get; set; }
     public NotifyIcon NotifyIcon { get; set; }
 
-    private ToolStripMenuItem _toggleAllMenuItem;
+    private readonly ToolStripMenuItem _toggleAllMenuItem;
 
     // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
     public enum DWMWINDOWATTRIBUTE
@@ -62,6 +62,8 @@ public partial class MultiStopwatchWindow : AbstractWindow
             Text = "MultiStopwatch"
         };
 
+        NotifyIcon.MouseClick += TrayToggleAll_OnClick;
+
         var contextMenu = new ContextMenuStrip();
         contextMenu.AutoSize = false;
         contextMenu.Width = 100;
@@ -77,7 +79,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
         };
 
         var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
-        var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+        var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL;
         DwmSetWindowAttribute(contextMenu.Handle, attribute, ref preference, sizeof(uint));
 
         _toggleAllMenuItem = new ToolStripMenuItem("Show All");
@@ -203,6 +205,15 @@ public partial class MultiStopwatchWindow : AbstractWindow
             RedStopwatch.Pause();
             GreenStopwatch.Start();
             StartBtnIcon.Source = (ImageSource)FindResource("SwitchDrawingImage");
+        }
+    }
+
+    private void TrayToggleAll_OnClick(object? sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+        {
+            ToggleAll();
+            RefreshContextMenuItems();
         }
     }
 

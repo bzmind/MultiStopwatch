@@ -5,7 +5,7 @@ using System.Windows.Forms;
 public class RoundedRenderer : ToolStripProfessionalRenderer
 {
     private readonly Color _bgColor = Color.FromArgb(24, 26, 27);
-    private readonly Color _hoverColor = Color.FromArgb(38, 41, 43);
+    private readonly Color _hoverColor = Color.FromArgb(50, 50, 50);
 
     protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
     {
