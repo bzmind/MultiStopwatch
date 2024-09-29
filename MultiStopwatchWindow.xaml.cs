@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
+using System.Xml.Linq;
 using Microsoft.Win32;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
 using Application = System.Windows.Application;
+using Color = System.Drawing.Color;
 
 namespace MultiStopwatch;
 
@@ -16,6 +21,32 @@ public partial class MultiStopwatchWindow : AbstractWindow
     public MainViewModel ViewModel { get; set; }
     public StopwatchWindow StopwatchWindow { get; set; }
     public PomodoroWindow PomodoroWindow { get; set; }
+    public NotifyIcon NotifyIcon { get; set; }
+
+    private ToolStripMenuItem _toggleAllMenuItem;
+
+    // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
+    public enum DWMWINDOWATTRIBUTE
+    {
+        DWMWA_WINDOW_CORNER_PREFERENCE = 33
+    }
+
+    // The DWM_WINDOW_CORNER_PREFERENCE enum for DwmSetWindowAttribute's third parameter, which tells the function
+    // what value of the enum to set.
+    public enum DWM_WINDOW_CORNER_PREFERENCE
+    {
+        DWMWCP_DEFAULT = 0,
+        DWMWCP_DONOTROUND = 1,
+        DWMWCP_ROUND = 2,
+        DWMWCP_ROUNDSMALL = 3
+    }
+
+    // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
+    [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern long DwmSetWindowAttribute(IntPtr hwnd,
+        DWMWINDOWATTRIBUTE attribute,
+        ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
+        uint cbAttribute);
 
     public MultiStopwatchWindow(StopwatchWindow stopwatchWindow, PomodoroWindow pomodoroWindow)
     {
@@ -24,8 +55,49 @@ public partial class MultiStopwatchWindow : AbstractWindow
         Closed += OnClosing;
         SystemEvents.PowerModeChanged += PowerModeChanged<MultiStopwatchWindow>;
 
-        NotifyIcon.TrayLeftMouseDown += ToggleAll_OnClick;
-        NotifyIcon.ContextMenu.Closed += NotifyIconOnContextMenuClosed;
+        NotifyIcon = new NotifyIcon
+        {
+            Icon = Properties.Resources.Stopwatch,
+            Visible = true,
+            Text = "MultiStopwatch"
+        };
+
+        var contextMenu = new ContextMenuStrip();
+        contextMenu.AutoSize = false;
+        contextMenu.Width = 100;
+        contextMenu.Height = 91;
+        contextMenu.ShowImageMargin = false;
+        contextMenu.ForeColor = Color.White;
+        contextMenu.Renderer = new RoundedRenderer();
+        contextMenu.Opening += (_, _) =>
+        {
+            System.Drawing.Point mousePosition = System.Windows.Forms.Cursor.Position;
+            mousePosition.Offset(0, -91);
+            contextMenu.Show(mousePosition);
+        };
+
+        var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
+        var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+        DwmSetWindowAttribute(contextMenu.Handle, attribute, ref preference, sizeof(uint));
+
+        _toggleAllMenuItem = new ToolStripMenuItem("Show All");
+        _toggleAllMenuItem.Click += ToggleAll_OnClick;
+
+        var settingsMenuItem = new ToolStripMenuItem("Settings");
+        settingsMenuItem.Click += Settings_OnClick;
+
+        var resetPositionMenuItem = new ToolStripMenuItem("Reset Position");
+        resetPositionMenuItem.Click += ResetPosition_OnClick;
+
+        var exitMenuItem = new ToolStripMenuItem("Exit");
+        exitMenuItem.Click += Exit_OnClick;
+
+        contextMenu.Items.Add(_toggleAllMenuItem);
+        contextMenu.Items.Add(settingsMenuItem);
+        contextMenu.Items.Add(resetPositionMenuItem);
+        contextMenu.Items.Add(exitMenuItem);
+
+        NotifyIcon.ContextMenuStrip = contextMenu;
 
         PomodoroWindow = pomodoroWindow;
         StopwatchWindow = stopwatchWindow;
@@ -39,7 +111,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
         RestoreWindowsScales();
     }
 
-    private void Settings_OnClick(object sender, RoutedEventArgs e)
+    private void Settings_OnClick(object? sender, EventArgs e)
     {
         if (SettingsWindow.IsOpen) return;
         var settingsWindow = new SettingsWindow(this, StopwatchWindow, PomodoroWindow);
@@ -59,12 +131,6 @@ public partial class MultiStopwatchWindow : AbstractWindow
         SetWindowsScales(scale * 0.01);
     }
 
-    private void NotifyIconOnContextMenuClosed(object sender, RoutedEventArgs e)
-    {
-        StopwatchWindow.ResetTopMost();
-        ResetTopMost();
-    }
-
     public void RefreshContextMenuItems()
     {
         ViewModel.StopwatchCheckBox = RegHelper.IsWindowActive(AppWindow.Stopwatch);
@@ -77,24 +143,21 @@ public partial class MultiStopwatchWindow : AbstractWindow
             || RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 1)
         {
             ViewModel.IsToggleAllEnabled = true;
-            ViewModel.ToggleAllLabelText = "Hide All";
-            ViewModel.ToggleAllIcon = (ImageSource)FindResource("HideDrawingImage");
+            _toggleAllMenuItem.Text = "Hide All";
         }
         else if (RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0
                  || RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0
                  || RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
             ViewModel.IsToggleAllEnabled = true;
-            ViewModel.ToggleAllLabelText = "Show All";
-            ViewModel.ToggleAllIcon = (ImageSource)FindResource("ShowDrawingImage");
+            _toggleAllMenuItem.Text = "Show All";
         }
         else if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
                  !RegHelper.IsWindowActive(AppWindow.Stopwatch) && StopwatchWindow.Opacity == 0 &&
                  !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
             ViewModel.IsToggleAllEnabled = false;
-            ViewModel.ToggleAllLabelText = "Show All";
-            ViewModel.ToggleAllIcon = (ImageSource)FindResource("ShowDrawingImage");
+            _toggleAllMenuItem.Text = "Show All";
         }
     }
 
@@ -143,7 +206,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
         }
     }
 
-    private void ToggleAll_OnClick(object sender, RoutedEventArgs e)
+    private void ToggleAll_OnClick(object? sender, EventArgs e)
     {
         ToggleAll();
         RefreshContextMenuItems();
@@ -155,39 +218,39 @@ public partial class MultiStopwatchWindow : AbstractWindow
         {
             Opacity = 1;
             ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
+            _toggleAllMenuItem.Text = "Show All";
         }
         else if (Opacity == 1 && RegHelper.IsWindowActive(AppWindow.MultiStopwatch))
         {
             Opacity = 0;
             ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Hide All";
+            _toggleAllMenuItem.Text = "Hide All";
         }
 
         if (StopwatchWindow.Opacity == 0 && RegHelper.IsWindowActive(AppWindow.Stopwatch))
         {
             StopwatchWindow.Opacity = 1;
             StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
+            _toggleAllMenuItem.Text = "Show All";
         }
         else if (StopwatchWindow.Opacity == 1 && RegHelper.IsWindowActive(AppWindow.Stopwatch))
         {
             StopwatchWindow.Opacity = 0;
             StopwatchWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Hide All";
+            _toggleAllMenuItem.Text = "Hide All";
         }
 
         if (PomodoroWindow.Opacity == 0 && RegHelper.IsWindowActive(AppWindow.Pomodoro))
         {
             PomodoroWindow.Opacity = 1;
             PomodoroWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Show All";
+            _toggleAllMenuItem.Text = "Show All";
         }
         else if (PomodoroWindow.Opacity == 1 && RegHelper.IsWindowActive(AppWindow.Pomodoro))
         {
             PomodoroWindow.Opacity = 0;
             PomodoroWindow.ResetTopMost();
-            ViewModel.ToggleAllLabelText = "Hide All";
+            _toggleAllMenuItem.Text = "Hide All";
         }
 
         if (!RegHelper.IsWindowActive(AppWindow.MultiStopwatch) && Opacity == 0 &&
@@ -195,18 +258,18 @@ public partial class MultiStopwatchWindow : AbstractWindow
             !RegHelper.IsWindowActive(AppWindow.Pomodoro) && PomodoroWindow.Opacity == 0)
         {
             ViewModel.IsToggleAllEnabled = false;
-            ViewModel.ToggleAllLabelText = "Show All";
+            _toggleAllMenuItem.Text = "Show All";
         }
     }
 
-    private void ResetPosition_OnClick(object sender, RoutedEventArgs e)
+    private void ResetPosition_OnClick(object? sender, EventArgs e)
     {
         RestoreWindowPosition(AppWindow.MultiStopwatch);
         StopwatchWindow.RestoreWindowPosition(AppWindow.Stopwatch);
         PomodoroWindow.RestoreWindowPosition(AppWindow.Pomodoro);
     }
 
-    private void Exit_OnClick(object sender, RoutedEventArgs e)
+    private void Exit_OnClick(object? sender, EventArgs e)
     {
         Application.Current.Shutdown();
     }
