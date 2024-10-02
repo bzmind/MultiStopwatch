@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <Resource Include="assets\fonts\JetBrainsMono-SemiBold.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\Icons.xaml" />
     <Resource Include="assets\Stopwatch.ico">

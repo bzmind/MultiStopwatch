@@ -25,7 +25,7 @@
       <Border Background="Black" CornerRadius="4">
         <Grid>
           <Button x:Name="StartBtn" Margin="2.1,2,83,2" Width="21" Height="21" Cursor="Hand"
-                Click="StartBtn_OnClick">
+                Click="StartBtn_OnClick" Focusable="False">
             <Button.Template>
               <ControlTemplate TargetType="Button">
                 <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5"
@@ -76,11 +76,11 @@
               </ControlTemplate>
             </Button.Template>
             <Grid>
-              <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
+              <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" Focusable="False" />
             </Grid>
           </Button>
           <Button x:Name="ResetButton" Margin="25,2,60,2" Width="21" Height="21" Cursor="Hand"
-                Click="ResetButton_OnClick">
+                Click="ResetButton_OnClick" Focusable="False">
             <Button.Template>
               <ControlTemplate TargetType="Button">
                 <Border x:Name="ResetBtnBorder" Background="#333333" CornerRadius="3" Padding="3"
@@ -131,11 +131,11 @@
               </ControlTemplate>
             </Button.Template>
             <Grid>
-              <Image Source="{StaticResource ResetDrawingImage}" />
+              <Image Source="{StaticResource ResetDrawingImage}" Focusable="False" />
             </Grid>
           </Button>
           <TextBox x:Name="StopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
-                 FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+                 FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center" Focusable="False"
                  FontFamily="./assets/fonts/JetBrainsMono-SemiBold.ttf#JetBrains Mono SemiBold" FontWeight="SemiBold" Foreground="#DCDCDC"
                  Background="Transparent" Margin="46,0,0,0" Text="00:00:00" Height="9" Padding="-3.35"/>
         </Grid>

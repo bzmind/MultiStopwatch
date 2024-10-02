@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
-using System.Xml.Linq;
 using Microsoft.Win32;
 using MultiStopwatch.Models;
 using MultiStopwatch.Utility;

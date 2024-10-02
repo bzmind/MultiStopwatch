@@ -26,7 +26,7 @@
               HorizontalAlignment="Center" Width="83" Height="25" VerticalAlignment="Center">
         <Grid>
           <Button x:Name="StartBtn" Margin="0,2,58,2" Width="21" Height="21" Cursor="Hand"
-                  Click="StartBtn_OnClick">
+                  Click="StartBtn_OnClick" Focusable="False">
             <Button.Template>
               <ControlTemplate TargetType="Button">
                 <Border x:Name="StartBtnBorder" Background="#333333" CornerRadius="3" Padding="3.5"
@@ -77,18 +77,18 @@
               </ControlTemplate>
             </Button.Template>
             <Grid>
-              <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" />
+              <Image x:Name="StartBtnIcon" Source="{StaticResource StartDrawingImage}" Focusable="False" />
             </Grid>
           </Button>
 
           <TextBox x:Name="GreenStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
-               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center" Focusable="False"
                FontFamily="./assets/fonts/JetBrainsMono-SemiBold.ttf#JetBrains Mono SemiBold" FontWeight="SemiBold" Foreground="#24D167"
                Background="Transparent" Height="9" Margin="23,2,0,12" Text="00:00:00" 
                Padding="-3.35"/>
 
           <TextBox x:Name="RedStopwatchTextBox" IsReadOnly="True" SelectionBrush="Transparent"
-               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center"
+               FontSize="12" BorderThickness="0" Cursor="SizeAll" TextAlignment="Center" Focusable="False"
                FontFamily="./assets/fonts/JetBrainsMono-SemiBold.ttf#JetBrains Mono SemiBold" FontWeight="SemiBold" Foreground="#FF5050"
                Background="Transparent" Height="9" Margin="23,12,0,2" Text="00:00:00" 
                Padding="-3.35"/>

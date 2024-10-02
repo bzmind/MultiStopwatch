@@ -42,14 +42,21 @@ public class EnableDragHelper
         }
 
         var window = parent as Window;
-        try
+
+        if (window == null) return;
+
+        // Use Dispatcher.BeginInvoke to ensure DragMove is called when the dispatcher is not suspended.
+        window.Dispatcher.BeginInvoke(new Action(() =>
         {
-            window.DragMove();
-        }
-        catch (InvalidOperationException)
-        {
-            // ignored
-        }
+            try
+            {
+                window.DragMove();
+            }
+            catch (Exception)
+            {
+                // Handle any exceptions that might occur during the drag operation.
+            }
+        }), System.Windows.Threading.DispatcherPriority.Normal);
     }
 
     public static void SetEnableDrag(DependencyObject element, bool value)
