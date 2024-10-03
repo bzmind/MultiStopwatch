@@ -5,6 +5,8 @@ using MultiStopwatch.Utility;
 using System.Windows.Media;
 using MultiStopwatch.ViewModels;
 using Microsoft.Win32;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace MultiStopwatch;
 
@@ -180,5 +182,46 @@ public partial class PomodoroWindow : AbstractWindow
         _lastValidStudyNumber = default;
         _lastValidBreakNumber = default;
         _lastValidLongBreakNumber = default;
+    }
+
+    private void Border_MouseEnter(object sender, MouseEventArgs mouseEventArgs)
+    {
+        MainBorder.Background = new SolidColorBrush(Colors.Black); // Change to black on hover
+    }
+
+    private void Border_MouseLeave(object sender, MouseEventArgs mouseEventArgs)
+    {
+        MainBorder.Background = new SolidColorBrush(Color.FromArgb(1, 255, 255, 255)); // Back to transparent
+    }
+
+    private readonly HashSet<Key> _pressedKeys = new();
+
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (!_pressedKeys.Contains(e.Key))
+            _pressedKeys.Add(e.Key);
+
+        MoveWindow();
+    }
+
+    private void Window_KeyUp(object sender, KeyEventArgs e)
+    {
+        if (_pressedKeys.Contains(e.Key))
+            _pressedKeys.Remove(e.Key);
+    }
+
+    private void MoveWindow()
+    {
+        if (_pressedKeys.Contains(Key.Left))
+            Left -= 1;
+
+        if (_pressedKeys.Contains(Key.Right))
+            Left += 1;
+
+        if (_pressedKeys.Contains(Key.Up))
+            Top -= 1;
+
+        if (_pressedKeys.Contains(Key.Down))
+            Top += 1;
     }
 }

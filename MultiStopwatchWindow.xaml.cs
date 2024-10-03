@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 using MultiStopwatch.Models;
@@ -206,7 +208,7 @@ public partial class MultiStopwatchWindow : AbstractWindow
         }
     }
 
-    private void TrayToggleAll_OnClick(object? sender, MouseEventArgs e)
+    private void TrayToggleAll_OnClick(object? sender, System.Windows.Forms.MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
@@ -276,6 +278,47 @@ public partial class MultiStopwatchWindow : AbstractWindow
         RestoreWindowPosition(AppWindow.MultiStopwatch);
         StopwatchWindow.RestoreWindowPosition(AppWindow.Stopwatch);
         PomodoroWindow.RestoreWindowPosition(AppWindow.Pomodoro);
+    }
+
+    private void Border_MouseEnter(object sender, System.Windows.Input.MouseEventArgs mouseEventArgs)
+    {
+        MainBorder.Background = new SolidColorBrush(Colors.Black); // Change to black on hover
+    }
+
+    private void Border_MouseLeave(object sender, System.Windows.Input.MouseEventArgs mouseEventArgs)
+    {
+        MainBorder.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(1, 255, 255, 255)); // Back to transparent
+    }
+
+    private readonly HashSet<Key> _pressedKeys = new();
+
+    private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (!_pressedKeys.Contains(e.Key))
+            _pressedKeys.Add(e.Key);
+
+        MoveWindow();
+    }
+
+    private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (_pressedKeys.Contains(e.Key))
+            _pressedKeys.Remove(e.Key);
+    }
+
+    private void MoveWindow()
+    {
+        if (_pressedKeys.Contains(Key.Left))
+            Left -= 1;
+
+        if (_pressedKeys.Contains(Key.Right))
+            Left += 1;
+
+        if (_pressedKeys.Contains(Key.Up))
+            Top -= 1;
+
+        if (_pressedKeys.Contains(Key.Down))
+            Top += 1;
     }
 
     private void Exit_OnClick(object? sender, EventArgs e)

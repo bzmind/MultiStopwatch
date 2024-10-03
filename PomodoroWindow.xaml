@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:MultiStopwatch.Models"
         mc:Ignorable="d"
         Title="PomodoroWindow"
+        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         ShowInTaskbar="False" Topmost="True" Height="25" Width="84"
         utility:EnableDragHelper.EnableDrag="True">
@@ -22,8 +23,9 @@
       <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" />
     </Viewbox.RenderTransform>
     <Grid>
-      <Border Background="Black" CornerRadius="4"
-              HorizontalAlignment="Center" Width="83" Height="25" VerticalAlignment="Center">
+      <Border  x:Name="MainBorder" Background="#01FFFFFF" CornerRadius="4"
+               MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave"
+               HorizontalAlignment="Center" Width="83" Height="25" VerticalAlignment="Center">
         <Grid>
           <Button x:Name="StartBtn" Margin="0,2,58,2" Width="21" Height="21" Cursor="Hand"
                   Click="StartBtn_OnClick" Focusable="False">

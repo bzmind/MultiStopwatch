@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:MultiStopwatch.Models"
         mc:Ignorable="d"
         Title="MultiStopwatchWindow"
+        KeyDown="Window_KeyDown" KeyUp="Window_KeyUp"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         ShowInTaskbar="False" Topmost="True" Height="25" Width="106"
         utility:EnableDragHelper.EnableDrag="True">
@@ -22,7 +23,8 @@
       <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" />
     </Viewbox.RenderTransform>
     <Grid>
-      <Border Background="Black" CornerRadius="4">
+      <Border x:Name="MainBorder" Background="#01FFFFFF" CornerRadius="4"
+              MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
         <Grid>
           <Button x:Name="StartButton" Margin="2.1,2,83,2" Width="21" Height="21" Cursor="Hand"
                 Click="StartButton_OnClick" Focusable="False">
