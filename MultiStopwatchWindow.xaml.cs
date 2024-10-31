@@ -11,6 +11,7 @@ using MultiStopwatch.Utility;
 using MultiStopwatch.ViewModels;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MultiStopwatch;
 
@@ -65,16 +66,16 @@ public partial class MultiStopwatchWindow : AbstractWindow
         NotifyIcon.MouseClick += TrayToggleAll_OnClick;
 
         var contextMenu = new ContextMenuStrip();
-        contextMenu.AutoSize = false;
-        contextMenu.Width = 100;
-        contextMenu.Height = 91;
+        //contextMenu.AutoSize = false;
+        //contextMenu.Width = 100;
+        //contextMenu.Height = 91;
         contextMenu.ShowImageMargin = false;
         contextMenu.ForeColor = Color.White;
         contextMenu.Renderer = new RoundedRenderer();
         contextMenu.Opening += (_, _) =>
         {
             System.Drawing.Point mousePosition = System.Windows.Forms.Cursor.Position;
-            mousePosition.Offset(0, -91);
+            mousePosition.Offset(0, -contextMenu.Height);
             contextMenu.Show(mousePosition);
         };
 
